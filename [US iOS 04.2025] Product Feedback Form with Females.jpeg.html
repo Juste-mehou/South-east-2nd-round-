@@ -1,0 +1,583 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Harrisonburg → Cumberland Gap (Sept 25–28)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Leaflet from CDN -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+html,body,#map{height:100%;margin:0}
+#map{cursor:grab}
+#panel{position:absolute;top:12px;left:12px;background:#fff;padding:12px 14px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:1000;font-family:"Helvetica Neue",Arial,sans-serif;max-width:340px;max-height:calc(100vh - 24px);overflow:auto}
+#title{font-weight:700;font-size:15px;margin-bottom:4px}
+#subtitle{font-size:11px;color:#666;margin-bottom:10px;line-height:1.4}
+#status{margin-bottom:10px;font-size:12px;color:#222;line-height:1.4}
+#status b{color:#c11}
+button{padding:7px 12px;border:0;border-radius:7px;background:#222;color:white;cursor:pointer;margin-right:5px;font-size:12px;font-family:inherit}
+button:hover{background:#444}
+button.active{background:#c11}
+label{font-size:11px;color:#555;margin-right:4px}
+input[type=range]{vertical-align:middle;width:110px}
+.leg-key{font-size:11px;color:#333;margin-top:10px;padding-top:8px;border-top:1px solid #eee;line-height:1.6}
+.leg-key .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.tip{font-size:11px;color:#888;margin-top:8px;font-style:italic;line-height:1.4}
+.state-label{color:#7b2ff7;font-weight:700;font-size:12px;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff;pointer-events:none}
+.stop-label{background:#fff;padding:2px 6px;border-radius:4px;border:1px solid #ccc;font-size:11px;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.15);white-space:nowrap}
+.moto{cursor:grab}
+.moto.dragging{cursor:grabbing}
+.attr-badge{width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid #888;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer}
+.attr-section{margin-top:10px;padding-top:8px;border-top:1px solid #eee}
+.attr-section .hd{font-size:11px;font-weight:700;color:#333;margin-bottom:6px;line-height:1.3}
+.attr-row{display:flex;align-items:center;gap:6px;font-size:11px;color:#333;margin:3px 0;cursor:pointer;line-height:1.3}
+.attr-row input{margin:0}
+.attr-swatch{display:inline-block;width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+.moto-inner{transform-origin:32px 32px;transition:transform 0.1s ease-out;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="panel">
+<div id="title">🏍️ Harrisonburg → Cumberland Gap</div>
+<div id="subtitle">Sept 25–28, 2026 · ~700 mi · Fri PM through Mon PM · Take US-11 outbound to Roanoke, I-81 to Wytheville, US-25E through the tunnel to Middlesboro. US-11 all the way back on Monday.</div>
+<div id="status">Loading route…</div>
+<button onclick="play()">▶ Play</button>
+<button onclick="pause()">⏸ Pause</button>
+<button onclick="restart()">↻ Restart</button>
+<button id="dragBtn" onclick="toggleDrag()">✋ Drag bike</button>
+<div style="margin-top:8px">
+<label>Speed</label>
+<input type="range" id="speed" min="0.3" max="5" step="0.1" value="1.5">
+</div>
+<div class="leg-key">
+<div><span class="dot" style="background:#0aa"></span>Fri (US-11 &amp; I-81 → Wytheville)</div>
+<div><span class="dot" style="background:#c11"></span>Sat (I-81 &amp; US-25E → Cumberland Gap)</div>
+<div><span class="dot" style="background:#7b2ff7"></span>Sun (explore around Gap)</div>
+<div><span class="dot" style="background:#1f6bff"></span>Mon (US-11 all the way home)</div>
+</div>
+<div class="attr-section">
+<div class="hd">📍 Things to see (tap a pin for details) — toggle a type off to isolate what you like:</div>
+<div id="attrToggles"></div>
+</div>
+<div class="tip">Tip: click "Drag bike" to grab the motorcycle and slide it anywhere along the route.</div>
+</div>
+
+<script>
+// ─── ROUTE WAYPOINTS ─────────────────────────────────────────────────
+// Each waypoint = [lng, lat]. legStart marks where each day begins.
+const waypoints = [
+  // FRIDAY — Harrisonburg → Wytheville via US-11 to Roanoke, then I-81 south
+  [-78.8689, 38.4496],  // 0  Harrisonburg (start)
+  [-78.8895, 38.1499],  // 1  Staunton (US-11)
+  [-79.4428, 37.7840],  // 2  Lexington (US-11)
+  [-79.6817, 37.5271],  // 3  Buchanan (US-11 through Natural Bridge)
+  [-79.9414, 37.2710],  // 4  Roanoke (switch to I-81)
+  [-80.4106, 37.1298],  // 5  Christiansburg (I-81)
+  [-80.5556, 37.0298],  // 6  Radford (I-81)
+  [-80.7767, 36.9483],  // 7  Pulaski (I-81)
+  [-81.0876, 36.9484],  // 8  Wytheville / Bland area — FRIDAY CAMP (Walnut Flats)
+
+  // SATURDAY — Wytheville → Cumberland Gap via I-81 to Bristol, then US-25E
+  [-81.5197, 36.7134],  // 9  Marion (I-81)
+  [-81.9773, 36.6437],  // 10 Abingdon (I-81)
+  [-82.1735, 36.5951],  // 11 Bristol VA/TN (I-81 / US-11W split)
+  [-82.5490, 36.5484],  // 12 Kingsport TN (US-11W)
+  [-82.8365, 36.6001],  // 13 approaching Cumberland Gap Tunnel
+  [-83.6598, 36.6021],  // 14 Cumberland Gap / Middlesboro — SATURDAY & SUNDAY CAMP
+
+  // SUNDAY — explore around Cumberland Gap (loop up to Pinnacle & back)
+  [-83.6813, 36.6069],  // 15 Pinnacle Overlook Road up
+  [-83.6754, 36.6089],  // 16 Pinnacle Overlook summit (KY/TN/VA views)
+  [-83.6598, 36.6021],  // 17 back to camp
+
+  // MONDAY — Cumberland Gap → Harrisonburg via US-11 the whole way
+  [-82.8365, 36.6001],  // 18 back through the tunnel to TN
+  [-82.5490, 36.5484],  // 19 Kingsport
+  [-82.1735, 36.5951],  // 20 Bristol
+  [-81.9773, 36.6437],  // 21 Abingdon (US-11 north)
+  [-81.5197, 36.7134],  // 22 Marion
+  [-81.0876, 36.9484],  // 23 Wytheville
+  [-80.7767, 36.9483],  // 24 Pulaski
+  [-80.5556, 37.0298],  // 25 Radford
+  [-80.4106, 37.1298],  // 26 Christiansburg
+  [-79.9414, 37.2710],  // 27 Roanoke
+  [-79.6817, 37.5271],  // 28 Buchanan
+  [-79.4428, 37.7840],  // 29 Lexington
+  [-78.8895, 38.1499],  // 30 Staunton
+  [-78.8689, 38.4496],  // 31 Harrisonburg (home)
+];
+
+const names = [
+  "Harrisonburg (start)", "Staunton", "Lexington", "Buchanan", "Roanoke",
+  "Christiansburg", "Radford", "Pulaski", "Wytheville / Walnut Flats (Fri camp)",
+  "Marion", "Abingdon", "Bristol", "Kingsport", "Cumberland Gap Tunnel",
+  "Cumberland Gap NHP (Sat/Sun camp)",
+  "Pinnacle Rd", "Pinnacle Overlook (KY/TN/VA)", "Back to camp",
+  "Cumberland Gap Tunnel", "Kingsport", "Bristol", "Abingdon",
+  "Marion", "Wytheville", "Pulaski", "Radford", "Christiansburg",
+  "Roanoke", "Buchanan", "Lexington", "Staunton",
+  "Harrisonburg (home)"
+];
+
+// Day segments (indices into waypoints), for coloring the route
+const days = [
+  { name: "Fri",  start: 0,  end: 8,  color: "#0aa"    },
+  { name: "Sat",  start: 8,  end: 14, color: "#c11"    },
+  { name: "Sun",  start: 14, end: 17, color: "#7b2ff7" },
+  { name: "Mon",  start: 17, end: 31, color: "#1f6bff" },
+];
+
+// ─── MAP SETUP ────────────────────────────────────────────────────────
+const map = L.map('map',{preferCanvas:true, zoomControl:false}).setView([37.5,-81.0],7);
+L.control.zoom({position:'topright'}).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  maxZoom:18,
+  attribution:'© OpenStreetMap contributors'
+}).addTo(map);
+
+// State labels (Virginia, Kentucky, Tennessee)
+const stateLabels = {
+  "VIRGINIA":     [37.9, -78.5],
+  "WEST VIRGINIA":[38.4, -81.0],
+  "KENTUCKY":     [36.9, -84.5],
+  "TENNESSEE":    [36.2, -83.5],
+  "NORTH CAROLINA":[36.0,-80.5]
+};
+Object.entries(stateLabels).forEach(([n,ll])=>{
+  L.marker(ll,{interactive:false,keyboard:false,icon:L.divIcon({
+    className:'state-label',html:n,iconSize:[160,20],iconAnchor:[80,10]
+  })}).addTo(map);
+});
+
+// Waypoint dots + tooltips
+waypoints.forEach((p,i)=>{
+  const isEndpoint = (i===0 || i===waypoints.length-1);
+  const isCamp = (i===8 || i===14);
+  const isOverlook = (i===16);
+  L.circleMarker([p[1],p[0]],{
+    radius: isEndpoint?7 : (isCamp||isOverlook)?6 : 3,
+    weight:1,
+    color:'#111',
+    fillColor: isEndpoint?'#111' : isCamp?'#c11' : isOverlook?'#7b2ff7' : '#666',
+    fillOpacity:.9
+  }).bindTooltip(names[i],{permanent:false,direction:'top'}).addTo(map);
+});
+
+// Persistent labels for the key stops
+[
+  {i:0,  text:"🏁 Harrisonburg"},
+  {i:8,  text:"⛺ Fri camp (Walnut Flats)"},
+  {i:14, text:"⛺ Sat/Sun camp (Wilderness Road CG)"},
+  {i:16, text:"👁 Pinnacle Overlook (3 states)"},
+].forEach(({i,text})=>{
+  L.marker([waypoints[i][1],waypoints[i][0]],{
+    interactive:false,
+    icon:L.divIcon({className:'stop-label',html:text,iconSize:[null,null]})
+  }).addTo(map);
+});
+
+// ─── ATTRACTIONS (categorized points of interest) ─────────────────────
+const attrCats = {
+  over: { label:"Overlooks & big views",      color:"#f28c00", emoji:"🔭" },
+  cave: { label:"Caves, caverns & stone",     color:"#8b5a2b", emoji:"🪨" },
+  road: { label:"Roads worth riding",         color:"#d61f5a", emoji:"🏍" },
+  hist: { label:"Living history",             color:"#2e8b3d", emoji:"🏛" },
+  town: { label:"Towns, theatre & music",     color:"#a83bd6", emoji:"🎭" },
+  odd:  { label:"Offbeat roadside Americana", color:"#0a9aa0", emoji:"🦕" },
+};
+
+const attractions = [
+  // Overlooks & big views
+  { cat:"over", name:"Mill Mountain Star",          lat:37.2506, lng:-79.9319, when:"Fri or Mon · Roanoke",       blurb:"World's largest illuminated star, with a downtown overlook. Drive-up." },
+  { cat:"over", name:"Big Walker Lookout",          lat:37.0027, lng:-81.1310, when:"Fri · near camp",            blurb:"100-ft tower + country store on US-52 north of Wytheville." },
+  { cat:"over", name:"White Rocks Overlook",        lat:36.6230, lng:-83.4130, when:"Sun · east end of Gap",      blurb:"The earned version of the big view: a long, steep hike, not a drive-up." },
+  { cat:"over", name:"Grayson Highlands (ponies)",  lat:36.6280, lng:-81.5060, when:"Detour via US-58",           blurb:"Wild ponies + high-country balds. A real detour off Marion, but iconic." },
+
+  // Caves, caverns & stone
+  { cat:"cave", name:"Natural Bridge",              lat:37.6273, lng:-79.5433, when:"Fri or Mon · on US-11",      blurb:"215-ft limestone arch once owned by Jefferson; trail under it to Lace Falls." },
+  { cat:"cave", name:"Grand Caverns",               lat:38.2670, lng:-78.8370, when:"Fri or Mon · near Staunton", blurb:"Classic show cave a few miles off the Valley spine." },
+  { cat:"cave", name:"Dixie Caverns",               lat:37.2358, lng:-80.1466, when:"Fri or Mon · near Salem",    blurb:"Show cave just off I-81 near Roanoke." },
+  { cat:"cave", name:"Gap Cave",                    lat:36.6033, lng:-83.6772, when:"Sun · verify season!",       blurb:"183-step ranger-led descent. Often closed by ~Sept 30 for bats — confirm first." },
+
+  // Roads worth riding
+  { cat:"road", name:"Back of the Dragon (VA-16)",  lat:36.8780, lng:-81.5230, when:"Sat · off Marion",          blurb:"32 mi, 400+ curves up to Tazewell. THE rider road here. Out-and-back ~1.5–2 hrs." },
+  { cat:"road", name:"Goshen Pass (VA-39)",         lat:37.9950, lng:-79.4900, when:"Detour W of Lexington",     blurb:"Short, pretty river-gorge sweeper set if you want one more good road." },
+
+  // Living history
+  { cat:"hist", name:"Frontier Culture Museum",     lat:38.1290, lng:-78.9060, when:"Fri or Mon · Staunton",     blurb:"Outdoor living-history farms with costumed interpreters." },
+  { cat:"hist", name:"Hensley Settlement",          lat:36.6640, lng:-83.5230, when:"Sun · reserve day before",  blurb:"Preserved 1900s mountain village atop Brush Mtn. Ranger shuttle, Fri–Mon 10am." },
+  { cat:"hist", name:"Cumberland Gap / Tri-State",  lat:36.6015, lng:-83.6810, when:"Sun",                       blurb:"Walk the actual pioneer notch + Civil War forts. Where ~300k settlers crossed." },
+
+  // Towns, theatre & music
+  { cat:"town", name:"Staunton downtown",           lat:38.1496, lng:-79.0716, when:"Fri or Mon",                blurb:"Beverley St + the American Shakespeare Center's Blackfriars Playhouse." },
+  { cat:"town", name:"Lexington downtown",          lat:37.7840, lng:-79.4430, when:"Fri or Mon",                blurb:"Historic streets, W&L + VMI, Stonewall Jackson's grave." },
+  { cat:"town", name:"Marion — Lincoln Theatre",    lat:36.8346, lng:-81.5145, when:"Sat · on route",            blurb:"Art-deco theatre, home of bluegrass TV show 'Song of the Mountains'." },
+  { cat:"town", name:"Abingdon — Barter Theatre",   lat:36.7096, lng:-81.9773, when:"Sat · on route",            blurb:"State Theatre of VA + Martha Washington Inn + Creeper Trail. Richest town stop." },
+  { cat:"town", name:"Bristol — Country Music",     lat:36.5963, lng:-82.1840, when:"Sat · on route",            blurb:"Birthplace of Country Music Museum (Smithsonian), walkable State Street." },
+
+  // Offbeat roadside Americana
+  { cat:"odd",  name:"Dinosaur Kingdom II",         lat:37.6300, lng:-79.5450, when:"Fri or Mon · Nat. Bridge",  blurb:"Mark Cline's gloriously weird sculpture park: dinosaurs vs. Civil War." },
+  { cat:"odd",  name:"Black Dog Salvage",           lat:37.2670, lng:-79.9640, when:"Fri or Mon · Roanoke",      blurb:"Architectural salvage yard from the 'Salvage Dogs' TV show." },
+  { cat:"odd",  name:"VA Museum of Transportation", lat:37.2760, lng:-79.9440, when:"Fri or Mon · Roanoke",      blurb:"Big steam & diesel locomotives." },
+];
+
+const attrLayers = {};
+Object.keys(attrCats).forEach(k=> attrLayers[k] = L.layerGroup().addTo(map));
+
+attractions.forEach(a=>{
+  const c = attrCats[a.cat];
+  const icon = L.divIcon({
+    className:'attr-marker',
+    html:`<div class="attr-badge" style="border-color:${c.color}">${c.emoji}</div>`,
+    iconSize:[24,24], iconAnchor:[12,12], popupAnchor:[0,-12]
+  });
+  L.marker([a.lat,a.lng],{icon})
+    .bindPopup(
+      `<b>${a.name}</b><br>`+
+      `<span style="color:${c.color};font-weight:600;font-size:11px">${c.emoji} ${c.label}</span><br>`+
+      `<span style="font-size:12px">${a.blurb}</span><br>`+
+      `<span style="font-size:11px;color:#777">🗓 ${a.when}</span>`)
+    .bindTooltip(a.name,{direction:'top'})
+    .addTo(attrLayers[a.cat]);
+});
+
+// Build category toggles in the panel (uncheck one to hide that type)
+const togWrap = document.getElementById('attrToggles');
+if (togWrap){
+  Object.entries(attrCats).forEach(([k,c])=>{
+    const row = document.createElement('label');
+    row.className = 'attr-row';
+    row.innerHTML =
+      `<input type="checkbox" checked>`+
+      `<span class="attr-swatch" style="background:${c.color}"></span>`+
+      `${c.emoji} ${c.label}`;
+    togWrap.appendChild(row);
+    row.querySelector('input').addEventListener('change', e=>{
+      if (e.target.checked) attrLayers[k].addTo(map);
+      else map.removeLayer(attrLayers[k]);
+    });
+  });
+}
+
+// ─── ROUTE STATE ──────────────────────────────────────────────────────
+let full = [];        // dense interpolated path following actual roads
+let cumMi = [];       // cumulative miles at each point of `full`
+let dayPolylines = []; // one polyline per day, colored
+let traveled;         // overlay showing distance covered so far (glow blue)
+let moto;             // motorcycle marker
+let idx = 0;          // current position along `full`
+let playing = false;
+let timer = null;
+let sdx, sdy;         // smoothed heading vector for the bike
+let dayBoundaryIdx = []; // full-index at each day boundary (for coloring)
+
+// ─── ROUTE BUILDER (via OSRM road router) ─────────────────────────────
+// Same approach as the original: ask OSRM to route through the waypoints so
+// the line follows the actual roads, not straight-line hops between them.
+async function build(){
+  const coords = waypoints.map(p=>p.join(',')).join(';');
+  const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=false`;
+  try {
+    const r = await fetch(url);
+    const j = await r.json();
+    if (j.code !== 'Ok') throw new Error(j.code);
+    const geometry = j.routes[0].geometry.coordinates;
+    const legs = j.routes[0].legs;   // one per waypoint pair — gives us day boundaries
+
+    // Densify the polyline so animation is smooth and the moto can be placed
+    // anywhere along it without jumping.
+    full = interpolate(geometry, 0.0012);
+
+    // Track cumulative mileage so status can show "X mi covered"
+    cumMi = new Array(full.length);
+    cumMi[0] = 0;
+    for (let i=1; i<full.length; i++){
+      cumMi[i] = cumMi[i-1] + haversineMi(full[i-1], full[i]);
+    }
+
+    // Figure out which point on `full` each waypoint sits closest to.
+    // Then split `full` into one polyline per DAY (not per leg) so the
+    // route is colored by day, and we know where day boundaries fall.
+    const wpIdx = waypoints.map(p => nearestIndexToFull(p));
+    dayBoundaryIdx = wpIdx;
+
+    days.forEach(d=>{
+      const from = wpIdx[d.start], to = wpIdx[d.end];
+      const seg = full.slice(from, to+1).map(p=>[p[1],p[0]]);
+      const pl = L.polyline(seg,{
+        color: d.color, weight: 5, opacity: 0.85, interactive:false
+      }).addTo(map);
+      dayPolylines.push(pl);
+    });
+
+    // Blue "traveled" overlay drawn on top as the bike moves
+    traveled = L.polyline([],{
+      color:'#1f6bff', weight:6, opacity:.55, interactive:false
+    }).addTo(map);
+
+    // Motorcycle marker (draggable via our own logic below)
+    moto = L.marker([full[0][1],full[0][0]],{
+      icon: motoIcon(),
+      zIndexOffset: 1000
+    }).addTo(map);
+    attachDragHandlers();
+
+    // Fit the whole route on load
+    map.fitBounds(L.latLngBounds(full.map(p=>[p[1],p[0]])),{padding:[60,60]});
+    draw();
+    updateStatus();
+  } catch(e) {
+    document.getElementById('status').innerHTML =
+      '⚠️ Could not load road geometry.<br>Check your internet connection and reload.';
+    console.error(e);
+  }
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────
+function interpolate(points, step){
+  // Insert extra points so no two adjacent points are more than `step` apart.
+  // Keeps the moto animation smooth on long straight segments.
+  let out = [points[0]];
+  for (let i=1; i<points.length; i++){
+    const a=points[i-1], b=points[i];
+    const d=Math.hypot(b[0]-a[0], b[1]-a[1]);
+    const n=Math.max(1, Math.ceil(d/step));
+    for (let j=1; j<=n; j++){
+      out.push([a[0]+(b[0]-a[0])*j/n, a[1]+(b[1]-a[1])*j/n]);
+    }
+  }
+  return out;
+}
+
+function haversineMi(a,b){
+  const R=3958.8;
+  const la1=a[1]*Math.PI/180, la2=b[1]*Math.PI/180;
+  const dla=(b[1]-a[1])*Math.PI/180, dlo=(b[0]-a[0])*Math.PI/180;
+  const h=Math.sin(dla/2)**2 + Math.cos(la1)*Math.cos(la2)*Math.sin(dlo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+
+function nearestIndexToFull(point){
+  let best=0, bd=Infinity;
+  for (let i=0; i<full.length; i++){
+    const d = (full[i][0]-point[0])**2 + (full[i][1]-point[1])**2;
+    if (d<bd){ bd=d; best=i; }
+  }
+  return best;
+}
+
+// Same side-view motorcycle SVG the original file uses, wrapped so we can
+// rotate an inner element for heading while the outer marker gets positioned
+// by Leaflet.
+function motoIcon(){
+  return L.divIcon({
+    className:'moto',
+    html:`<div class="moto-inner"><svg viewBox="0 0 96 64" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="26" cy="48" r="12" fill="#1c1c1c"/>
+      <circle cx="26" cy="48" r="6" fill="#8a8a8a"/>
+      <circle cx="26" cy="48" r="2" fill="#cfcfcf"/>
+      <circle cx="74" cy="48" r="12" fill="#1c1c1c"/>
+      <circle cx="74" cy="48" r="6" fill="#8a8a8a"/>
+      <circle cx="74" cy="48" r="2" fill="#cfcfcf"/>
+      <rect x="12" y="32" width="15" height="13" rx="2" fill="#3a3a3a" stroke="#111" stroke-width="1.5"/>
+      <path d="M74 48 L80 25" stroke="#9a9a9a" stroke-width="3" stroke-linecap="round"/>
+      <path d="M69 35 L93 40 L87 46 L71 45 Z" fill="#2a2a2a"/>
+      <path d="M64 40 Q74 33 85 40" fill="none" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>
+      <path d="M30 51 L35 40 L66 40 L71 51 Z" fill="#2f2f2f" stroke="#111" stroke-width="1"/>
+      <path d="M35 51 L66 51 L64 55 L37 55 Z" fill="#222"/>
+      <path d="M30 35 L52 32 L52 38 L30 39 Z" fill="#1a1a1a"/>
+      <path d="M50 35 Q52 24 68 27 L70 35 Z" fill="#ffffff" stroke="#b9b9b9" stroke-width="1.5"/>
+      <path d="M54 29 Q60 27 66 29" fill="none" stroke="#dcdcdc" stroke-width="1.5"/>
+      <path d="M78 30 L86 33 L83 39 L76 37 Z" fill="#efe6a0" stroke="#333" stroke-width="1"/>
+      <path d="M45 35 L57 43" stroke="#26303a" stroke-width="6" stroke-linecap="round"/>
+      <path d="M57 43 L52 53" stroke="#161a1f" stroke-width="6" stroke-linecap="round"/>
+      <path d="M49 53 L58 54 L58 56 L48 56 Z" fill="#111"/>
+      <path d="M45 35 L61 19" stroke="#33414d" stroke-width="9" stroke-linecap="round"/>
+      <path d="M60 21 L80 29" stroke="#3d4d5b" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="80" cy="29" r="2.5" fill="#111"/>
+      <circle cx="65" cy="13" r="7.5" fill="#cc2b2b" stroke="#111" stroke-width="1.5"/>
+      <path d="M65 8 Q73 10 71 17 L65 17 Z" fill="#1d2b34"/>
+      <path d="M60 7 L74 8" stroke="#111" stroke-width="2" stroke-linecap="round"/>
+      <path d="M80 27 Q88 17 85 8 L81 10 Q82 20 76 27 Z" fill="#bcd6f0" fill-opacity="0.65" stroke="#8fa8bd" stroke-width="1"/>
+    </svg></div>`,
+    iconSize:[64,44],
+    iconAnchor:[32,41]
+  });
+}
+
+// ─── FRAME UPDATE ─────────────────────────────────────────────────────
+function draw(){
+  if (!moto) return;
+  const p = full[idx];
+  moto.setLatLng([p[1], p[0]]);
+
+  // Compute a smoothed heading over a window of points ahead/behind so the
+  // bike gently swings through curves instead of snapping frame-to-frame.
+  const z = map.getZoom();
+  const ahead  = Math.max(4, Math.min(Math.floor(full.length/4), Math.round(6*Math.pow(2, 12-z))));
+  const behind = Math.round(ahead * 0.4);
+  const a = full[Math.max(0, idx-behind)];
+  const b = full[Math.min(full.length-1, idx+ahead)];
+  let vx = b[0]-a[0], vy = -(b[1]-a[1]);
+  const len = Math.hypot(vx,vy) || 1;
+  vx /= len; vy /= len;
+  if (sdx === undefined){ sdx=vx; sdy=vy; }
+  const k = 0.20; sdx += (vx-sdx)*k; sdy += (vy-sdy)*k;
+  const theta = Math.atan2(sdy, sdx) * 180/Math.PI;
+  const el = moto.getElement();
+  const inner = el && el.querySelector('.moto-inner');
+  if (inner){
+    // When the bike faces left, flip it horizontally so it stays upright
+    // (the SVG is drawn as a side view facing right by default).
+    inner.style.transform = sdx >= 0
+      ? `rotate(${theta}deg)`
+      : `scaleX(-1) rotate(${180-theta}deg)`;
+  }
+
+  traveled.setLatLngs(full.slice(0, idx+1).map(p=>[p[1],p[0]]));
+  updateStatus();
+}
+
+function updateStatus(){
+  if (!cumMi.length) return;
+  const miles = Math.floor(cumMi[idx]);
+  const total = Math.floor(cumMi[cumMi.length-1]);
+  const pct = (idx / (full.length-1) * 100).toFixed(1);
+  const day = currentDay();
+  const stop = nearestNamedStop();
+  document.getElementById('status').innerHTML =
+    `<b>${day}</b> · ${miles} of ${total} mi (${pct}%)<br>near: ${stop}`;
+}
+
+function currentDay(){
+  // Which day segment is the bike currently in?
+  for (let i=0; i<days.length; i++){
+    const from = dayBoundaryIdx[days[i].start];
+    const to   = dayBoundaryIdx[days[i].end];
+    if (idx >= from && idx <= to) return days[i].name;
+  }
+  return "Fri";
+}
+
+function nearestNamedStop(){
+  // Find the closest waypoint to the bike's current position, and name it.
+  let best = 0, bd = Infinity;
+  for (let i=0; i<dayBoundaryIdx.length; i++){
+    const d = Math.abs(dayBoundaryIdx[i] - idx);
+    if (d < bd){ bd = d; best = i; }
+  }
+  return names[best];
+}
+
+// ─── PLAYBACK ─────────────────────────────────────────────────────────
+function tick(){
+  if (!playing) return;
+  // Zoom-aware step size: cover ground fast when zoomed out, slow down when close.
+  const z = map.getZoom();
+  const zf = Math.min(6, Math.max(0.3, Math.pow(2, 12-z)));
+  const spd = Number(document.getElementById('speed').value);
+  idx = Math.min(full.length-1, idx + Math.max(1, Math.round(2*spd*zf)));
+  draw();
+  if (idx >= full.length-1){ playing = false; return; }
+  timer = setTimeout(tick, 30);
+}
+
+function play(){ if(full.length){ playing=true; clearTimeout(timer); tick(); } }
+function pause(){ playing=false; clearTimeout(timer); }
+function restart(){ playing=false; clearTimeout(timer); idx=0; sdx=sdy=undefined; draw(); }
+
+// ─── DRAG THE BIKE ALONG THE ROUTE ────────────────────────────────────
+// Click "Drag bike" to enter drag mode: mouse/touch drags the moto and it
+// snaps to the nearest point on the route as you move, following the road.
+let dragMode = false;
+let isDragging = false;
+
+function toggleDrag(){
+  dragMode = !dragMode;
+  const btn = document.getElementById('dragBtn');
+  btn.classList.toggle('active', dragMode);
+  btn.textContent = dragMode ? '✋ Drag: ON' : '✋ Drag bike';
+  // While dragging is on, disable map panning so grabbing the bike doesn't
+  // also pan the map underneath it.
+  if (dragMode){ map.dragging.disable(); pause(); }
+  else { map.dragging.enable(); }
+}
+
+function attachDragHandlers(){
+  const el = moto.getElement();
+  if (!el) return;
+
+  const startDrag = (e)=>{
+    if (!dragMode) return;
+    isDragging = true;
+    el.classList.add('dragging');
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const moveDrag = (e)=>{
+    if (!isDragging || !dragMode) return;
+    e.preventDefault();
+
+    // Get pointer position in map coords, then snap to nearest route point
+    const point = getPointerLatLng(e);
+    if (!point) return;
+    idx = nearestFullIndexToLatLng(point);
+    draw();
+  };
+
+  const endDrag = (e)=>{
+    if (!isDragging) return;
+    isDragging = false;
+    el.classList.remove('dragging');
+  };
+
+  // Mouse events on the bike itself start the drag
+  el.addEventListener('mousedown', startDrag);
+  el.addEventListener('touchstart', startDrag, {passive:false});
+
+  // Move/end events on the whole document so drag survives if the pointer
+  // temporarily leaves the bike icon.
+  document.addEventListener('mousemove', moveDrag);
+  document.addEventListener('touchmove', moveDrag, {passive:false});
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+  document.addEventListener('touchcancel', endDrag);
+}
+
+function getPointerLatLng(e){
+  // Extract client X/Y from mouse or touch event, convert to map latlng.
+  let cx, cy;
+  if (e.touches && e.touches.length){
+    cx = e.touches[0].clientX;
+    cy = e.touches[0].clientY;
+  } else if (e.changedTouches && e.changedTouches.length){
+    cx = e.changedTouches[0].clientX;
+    cy = e.changedTouches[0].clientY;
+  } else {
+    cx = e.clientX; cy = e.clientY;
+  }
+  if (cx === undefined) return null;
+  const rect = map.getContainer().getBoundingClientRect();
+  const containerPoint = L.point(cx - rect.left, cy - rect.top);
+  return map.containerPointToLatLng(containerPoint);
+}
+
+function nearestFullIndexToLatLng(latlng){
+  // Linear scan of `full`. Fine for a few thousand points; keeps code simple.
+  let best = 0, bd = Infinity;
+  const lng = latlng.lng, lat = latlng.lat;
+  for (let i=0; i<full.length; i++){
+    const dx = full[i][0]-lng, dy = full[i][1]-lat;
+    const d = dx*dx + dy*dy;
+    if (d<bd){ bd=d; best=i; }
+  }
+  return best;
+}
+
+// ─── GO ───────────────────────────────────────────────────────────────
+build();
+</script>
+</body>
+</html>
