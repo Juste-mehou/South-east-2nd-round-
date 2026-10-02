@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Harrisonburg to Middlesboro Motorcycle Trip</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+html,body,#map{height:100%;margin:0}
+#panel{position:absolute;z-index:1000;top:12px;left:12px;background:rgba(255,255,255,.94);padding:12px 14px;border-radius:10px;font:14px system-ui;box-shadow:0 2px 10px #0003;max-width:330px}
+#title{font-weight:700;font-size:16px;margin-bottom:6px}
+#status{margin-bottom:8px}
+button{padding:7px 12px;border:0;border-radius:7px;background:#222;color:white;cursor:pointer;margin-right:5px}
+#speed{width:100px;vertical-align:middle}
+.moto{width:46px!important;height:46px!important;transform-origin:center center;filter:drop-shadow(2px 3px 2px #0006);display:flex;align-items:center;justify-content:center}.moto svg{width:46px;height:46px;overflow:visible}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="panel">
+<div id="title">🏍️ Harrisonburg → Middlesboro</div>
+<div id="status">Building the road-following route…</div>
+<button onclick="play()">Play</button>
+<button onclick="pause()">Pause</button>
+<button onclick="restart()">Restart</button>
+<label> Speed <input id="speed" type="range" min="0.25" max="4" value="1" step="0.25"></label>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const waypoints = [[-78.8689, 38.4496], [-79.24461, 38.62479], [-79.33127, 38.6417], [-79.17, 38.76], [-79.462, 38.747], [-79.2659, 38.9861], [-79.1257, 38.99379], [-78.9695, 39.0623], [-79.46632, 39.13111], [-79.405, 39.1], [-79.5544, 39.3242], [-79.6848, 39.4713], [-79.850993, 39.387585], [-80.14359, 39.48569], [-80.019817, 39.341757], [-80.040359, 39.152321], [-79.938166, 39.025706], [-79.84959, 38.92521], [-80.0914548, 38.2745635], [-80.844207, 38.283342], [-81.104, 38.053], [-81.1882, 37.7782], [-81.2223, 37.2698], [-81.5203, 37.1167], [-82.0801, 36.9009], [-83.716, 36.6085]];
+const names = ["Harrisonburg", "Brandywine", "Franklin", "Germany Valley", "Riverton", "Smoke Hole Caverns", "Petersburg", "Moorefield", "Davis", "Canaan camping", "Aurora", "Kingwood", "Newburg", "Fairmont", "Grafton", "Philippi", "Belington", "Elkins", "Edray", "Summersville", "Fayetteville", "Beckley", "Bluefield", "Tazewell", "Lebanon", "Middlesboro"];
+const map = L.map('map',{preferCanvas:true}).setView([38.5,-80.5],7);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
+
+const markers=[];
+waypoints.forEach((p,i)=>{
+  const m=L.circleMarker([p[1],p[0]],{radius:i==0||i==waypoints.length-1?6:3,weight:1,fillOpacity:.9})
+    .bindTooltip(names[i],{permanent:false});
+  m.addTo(map); markers.push(m);
+});
+
+let full=[], traveled, moto, idx=0, playing=false, timer=null, lastCamera=0, lastWaypoint=-1;
+function interpolate(points, step=0.002){
+  let out=[points[0]];
+  for(let i=1;i<points.length;i++){
+    const a=points[i-1], b=points[i];
+    const d=Math.hypot(b[0]-a[0], b[1]-a[1]);
+    const n=Math.max(1,Math.ceil(d/step));
+    for(let j=1;j<=n;j++) out.push([a[0]+(b[0]-a[0])*j/n,a[1]+(b[1]-a[1])*j/n]);
+  }
+  return out;
+}
+function bearing(a,b){
+  const dx=b[0]-a[0], dy=b[1]-a[1];
+  return Math.atan2(dx,dy)*180/Math.PI;
+}
+function nearestIndexToWaypoint(point){
+  let best=0,bd=1e9;
+  for(let i=0;i<full.length;i++){let d=(full[i][0]-point[0])**2+(full[i][1]-point[1])**2;if(d<bd){bd=d;best=i;}}
+  return best;
+}
+function draw(){
+  if(!moto) return;
+  const p=full[idx], q=full[Math.min(idx+2,full.length-1)];
+  moto.setLatLng([p[1],p[0]]);
+  const angle=bearing(p,q);
+  const el=moto.getElement();
+  if(el) el.style.transform=`rotate(${angle}deg)`;
+  // Follow the motorcycle with a closer camera. Zoom out briefly at major waypoints.
+  const wp=waypoints.map(x=>[x[0],x[1]]);
+  let near=-1, best=Infinity;
+  for(let k=0;k<wp.length;k++){ const d=(p[0]-wp[k][0])**2+(p[1]-wp[k][1])**2; if(d<best){best=d;near=k;} }
+  const nearWaypoint=best < 0.0035*0.0035;
+  const targetZoom=nearWaypoint ? 9.2 : 12.4;
+  if(idx-lastCamera>5 || nearWaypoint){
+    const current=map.getCenter();
+    const alpha=nearWaypoint ? 0.12 : 0.06;
+    const center=L.latLng(current.lat+(p[1]-current.lat)*alpha,current.lng+(p[0]-current.lng)*alpha);
+    map.setView(center,targetZoom,{animate:false});
+    lastCamera=idx;
+  }
+  traveled.setLatLngs(full.slice(0,idx+1).map(p=>[p[1],p[0]]));
+  const progress=(idx/(full.length-1)*100).toFixed(1);
+  document.getElementById('status').textContent=`${progress}% of reconstructed route`;
+}
+function tick(){
+  if(!playing)return;
+  idx=Math.min(full.length-1,idx+Math.max(1,Math.round(2*Number(document.getElementById('speed').value))));
+  draw();
+  if(idx>=full.length-1){playing=false;return;}
+  timer=setTimeout(tick,30);
+}
+function play(){if(full.length){playing=true;clearTimeout(timer);tick();}}
+function pause(){playing=false;clearTimeout(timer)}
+function restart(){playing=false;clearTimeout(timer);idx=0;draw()}
+
+async function build(){
+  // OSRM routes through the ordered waypoints. Geometry is returned as GeoJSON.
+  const c=waypoints.map(p=>p.join(',')).join(';');
+  const url=`https://router.project-osrm.org/route/v1/driving/${c}?overview=full&geometries=geojson&steps=false`;
+  try{
+    const r=await fetch(url);
+    const j=await r.json();
+    if(j.code!=='Ok') throw new Error(j.code);
+    full=interpolate(j.routes[0].geometry.coordinates,0.0012);
+    traveled=L.polyline([],{weight:5,opacity:.9}).addTo(map);
+    moto=L.marker([full[0][1],full[0][0]],{
+      icon:L.divIcon({className:'moto',html:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="17" cy="50" r="8" fill="#333"/><circle cx="49" cy="50" r="8" fill="#333"/><path d="M17 50 L27 34 L43 34 L49 50 M27 34 L22 23 L31 20 L38 34 M43 34 L48 22 M45 20 L52 20" fill="none"/><path d="M28 34 Q34 27 40 34 L35 39 L25 39 Z" fill="#d33"/><path d="M25 27 Q29 16 38 17 L43 27 Z" fill="#222"/><circle cx="33" cy="13" r="5" fill="#f2c6a0"/><path d="M29 10 Q34 4 40 10" fill="#222"/></g></svg>`,iconSize:[46,46],iconAnchor:[23,23]})
+    }).addTo(map);
+    map.fitBounds(L.latLngBounds(full.map(p=>[p[1],p[0]])),{padding:[40,40]});
+    setTimeout(()=>map.flyTo([full[0][1],full[0][0]],11.8,{duration:2}),500);
+    draw();
+    document.getElementById('status').textContent='Ready — route is reconstructed through the listed waypoints.';
+  }catch(e){
+    document.getElementById('status').textContent='Could not load road geometry. Check your internet connection.';
+    console.error(e);
+  }
+}
+build();
+</script>
+</body></html>
