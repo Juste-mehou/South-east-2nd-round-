@@ -2,14 +2,14 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Harrisonburg → Cumberland Gap (Sept 25–28)</title>
+<title>Appalachian Camping &amp; Writing Loop · October 4–11, 2026</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Leaflet from CDN -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 html,body,#map{height:100%;margin:0}
-#map{cursor:grab}
+#map{cursor:grab;background:#e8ede7}
 #panel{position:absolute;top:12px;left:12px;background:#fff;padding:12px 14px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.15);z-index:1000;font-family:"Helvetica Neue",Arial,sans-serif;max-width:340px;max-height:calc(100vh - 24px);overflow:auto}
 #title{font-weight:700;font-size:15px;margin-bottom:4px}
 #subtitle{font-size:11px;color:#666;margin-bottom:10px;line-height:1.4}
@@ -34,107 +34,142 @@ input[type=range]{vertical-align:middle;width:110px}
 .attr-row input{margin:0}
 .attr-swatch{display:inline-block;width:10px;height:10px;border-radius:50%;flex:0 0 auto}
 .moto-inner{transform-origin:32px 32px;transition:transform 0.1s ease-out;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+
+#panel{max-width:370px;padding-bottom:18px}#subtitle{font-size:12px}details{border-top:1px solid #e5e5e5;padding:9px 0;font-size:12px;line-height:1.5}summary{font-weight:700;cursor:pointer}p{margin:7px 0}.badge{display:inline-block;padding:1px 6px;border-radius:5px;background:#eef3f1;font-size:10px;font-weight:bold}.warn{background:#fff0d9;padding:10px;border-radius:8px;font-size:12px;line-height:1.5}.daycard{border-left:4px solid var(--day);padding-left:9px}.daycard button{margin:4px 0;background:var(--day)}a{color:#17627d}input[type=number]{width:64px;padding:4px;border:1px solid #bbb;border-radius:4px}table{border-collapse:collapse;width:100%;font-size:11px}td,th{text-align:left;border-bottom:1px solid #e5e5e5;padding:5px 2px}.panel-toggle{position:fixed;bottom:12px;left:12px;z-index:1100;box-shadow:0 2px 8px #888}.hidden-panel{display:none}#routeNotice{font-size:11px;line-height:1.4;color:#555;margin:7px 0}@media(max-width:600px){#panel{left:8px;top:8px;max-width:calc(100vw - 58px);max-height:52vh;width:340px}button{margin-bottom:5px}.stop-label{font-size:10px}}@media print{#map,.panel-toggle,#controls,#status,#routeNotice,.attr-section{display:none}#panel{position:static;box-shadow:none;max-width:none;max-height:none;overflow:visible}details{break-inside:avoid}body{height:auto}}
+.camp-badge{width:34px;height:34px;font-size:20px;border-width:3px;background:#e9ffff;box-shadow:0 2px 8px #3338}.camp-label{font-weight:700;font-size:11px;border:2px solid #007e86;background:#fff;color:#005b62}.pin-link{display:block;background:#f2f6f5;color:#155c66;text-align:left;width:100%;margin:4px 0;padding:7px;font-size:12px}.pin-link:hover{background:#dceae6;color:#174b51}#pinCount{font-size:11px;color:#555}.location-control{background:white;border-radius:9px;padding:9px;box-shadow:0 2px 9px #0003;max-width:230px;font-family:inherit}.location-control button{margin:0;min-height:40px}.location-control .location-stop{margin-left:5px;background:#626262}.location-status{font-size:11px;line-height:1.4;margin-top:6px;color:#444;max-width:230px}.location-dot{width:16px;height:16px;border-radius:50%;background:#1479ed;border:3px solid white;box-shadow:0 0 0 2px #1479ed,0 2px 7px #0005}.location-control [hidden]{display:none!important}@media(max-width:600px){.location-control,.location-status{max-width:185px}}@media print{.location-control{display:none}}
 </style>
 </head>
 <body>
 <div id="map"></div>
 <div id="panel">
-<div id="title">🏍️ Harrisonburg → Cumberland Gap</div>
-<div id="subtitle">Sept 25–28, 2026 · ~700 mi · Fri PM through Mon PM · Take US-11 outbound to Roanoke, I-81 to Wytheville, US-25E through the tunnel to Middlesboro. US-11 all the way back on Monday.</div>
-<div id="status">Loading route…</div>
-<button onclick="play()">▶ Play</button>
-<button onclick="pause()">⏸ Pause</button>
-<button onclick="restart()">↻ Restart</button>
-<button id="dragBtn" onclick="toggleDrag()">✋ Drag bike</button>
-<div style="margin-top:8px">
-<label>Speed</label>
-<input type="range" id="speed" min="0.3" max="5" step="0.1" value="1.5">
-</div>
-<div class="leg-key">
-<div><span class="dot" style="background:#0aa"></span>Fri (US-11 &amp; I-81 → Wytheville)</div>
-<div><span class="dot" style="background:#c11"></span>Sat (I-81 &amp; US-25E → Cumberland Gap)</div>
-<div><span class="dot" style="background:#7b2ff7"></span>Sun (explore around Gap)</div>
-<div><span class="dot" style="background:#1f6bff"></span>Mon (US-11 all the way home)</div>
-</div>
-<div class="attr-section">
-<div class="hd">📍 Things to see (tap a pin for details) — toggle a type off to isolate what you like:</div>
-<div id="attrToggles"></div>
-</div>
-<div class="tip">Tip: click "Drag bike" to grab the motorcycle and slide it anywhere along the route.</div>
-</div>
+<div id="title">🏍️ Appalachian writing &amp; camping loop</div>
+<div id="subtitle">October 4–11, 2026 · 8 days / 7 camping nights · V-Strom 650<br>Cumberland Gap → Big South Fork → Cherohala / Dragon → Smokies → Harrisonburg</div>
+<div class="warn"><b>Your anchors:</b> 3 hours of writing every morning · two 4–7 mile hiking days · sleep 9 PM–5 AM · cook all meals · showers about every other night.</div>
+<p style="font-size:12px">Seven nights across <b>four camp setups</b>, with three two-night bases. Depart Sunday, October 4; return Sunday, October 11. The Cumberland Gap rest day is restored. Camp locations are candidates; nothing is booked. All four primary camps have labeled pins; the directory can focus each one.</p>
+<div id="status">Loading map route…</div>
+<div id="controls"><button onclick="play()">▶ Play</button><button onclick="pause()">⏸ Pause</button><button onclick="restart()">↻ Restart</button><button id="dragBtn" onclick="toggleDrag()">✋ Drag bike</button><div><label for="speed">Speed</label><input type="range" id="speed" min="0.3" max="5" step="0.1" value="1.5"></div></div>
+<div id="basemapNotice" class="warn" role="status" hidden>Some background tiles could not load. Check your internet connection and reload. Route lines, pins and the written plan remain available.</div>
+<div id="routeNotice">Road routing needs internet. Dashed lines, if shown, are approximate connections and are not road navigation.</div>
+<details open><summary>Daily rhythm · all times Eastern</summary><p>5:00 wake · <b>5:15–8:15 write</b> · breakfast / pack · 9:00–9:30 depart. On moving days, target camp by 4:30–5:30; cook and decompress, wind down at 8:00, asleep by 9:00.</p><p>On hiking days: write → breakfast → one hike → same camp. Three writing hours stay protected. Use camp for early writing; do not depend on a café or library opening at 5 AM. Download work ahead of time and recharge before remote nights.</p><p>Use your phone's Eastern-time setting near Tennessee time-zone boundaries. Campground check-in rules can use a different local convention.</p></details>
+<div id="itinerary"></div>
+<details open><summary>Final-day tradeoff · Saturday relocation option</summary><div class="warn">Keeping Saturday as a full Smokies hiking day at the same camp leaves a <b>long Sunday return</b>. Three writing hours, a 9 PM bedtime and an entirely scenic 400+ mile final ride do not all fit comfortably.</div><p><b>Default:</b> keep both hiking days and the three two-night bases; Sunday gets a scenic start and substantial I-81 travel. Check a live ETA before departure.</p><p><b>Optional change:</b> make Monday your second 4–7 mi hiking day at Cumberland Gap, keep Wednesday's Big South Fork hike, and replace Saturday's Smokies hike with a northeast move toward Bristol / Abingdon. Camp at a confirmed low-elevation site with showers, then use selected US-11 / Appalachian back roads on Sunday. This gives five camp setups and a more relaxed scenic finish.</p><p>Do not combine a full Saturday hike with a late, long relocation. This alternative is not included in the default colored route or budget.</p></details>
+<details open><summary>Camping, showers &amp; connectivity</summary>
+<p><b>Oct 4–5 · Wilderness Road:</b> non-electric $18/night, picnic table, water and showers. Plan two offline writing mornings; recharge before arrival or ask about an electric site ($24/night). <a target="_blank" rel="noopener" href="https://www.nps.gov/cuga/planyourvisit/wilderness-road-campground.htm">Camp details / booking</a>.</p>
+<p><b>Oct 6–7 · Bandy Creek:</b> showers, tables and water; budget $25/night as an allowance, confirm the current tent-site checkout price. Write offline at camp. Visitor-center Wi-Fi is a daytime option, not guaranteed early-morning access. <a target="_blank" rel="noopener" href="https://www.nps.gov/biso/planyourvisit/bandycreekcampground.htm">Camp details / booking</a>.</p>
+<p><b>Oct 8 · Indian Boundary:</b> candidate near Cherohala; allow $30, confirm October availability, facilities and exact site fee before committing. It is a higher plateau camp, not the lowest-elevation option. If the overnight forecast is cold, ask about a lower Tellico Plains tent campground instead. <a target="_blank" rel="noopener" href="https://www.recreation.gov/camping/campgrounds/232215">Check Indian Boundary</a>.</p>
+<p><b>Oct 9–10 · Townsend:</b> Little River Campground is a candidate offering tent sites, bathhouse access and advertised Wi-Fi. Ask for the cheapest tent rate and electricity / charging access; $40/night here is a placeholder allowance, not a quote. <a target="_blank" rel="noopener" href="https://www.littlerivercampground.com/">Check tent sites</a>.</p>
+<p><b>Connectivity mix:</b> two Townsend nights with advertised Wi-Fi, two Bandy Creek nights near daytime visitor-center connectivity, and three nights primarily offline. A third night with dependable Wi-Fi would require a confirmed Tellico alternative. No campsite Wi-Fi quality is guaranteed.</p>
+<p><b>Shower rhythm:</b> Sun or Mon at Wilderness Road; Wed at Bandy Creek; Fri and/or Sat at Townsend. No gym membership needed. If choosing a cheaper Smokies camp without showers, Little River advertises a $10 shower pass for non-guests; confirm office hours. Compare campsite + shower costs together.</p>
+<p><b>Sleep:</b> favor valley camps; ride the ridges during the day. Check sleeping-bag comfort rating and pad insulation against the overnight low, since a three-season tent alone does not provide warmth. Confirm quiet surroundings when choosing a site.</p>
+</details>
+<details><summary>Budget · camping replaces motel nights</summary><p>Editable planning allowances, not confirmed quotes. Reservation fees, tax and any attraction admission are extra. No restaurant meals or recurring gym fee are assumed.</p>
+<table><tr><th>Camp</th><th>Nights</th><th>$/night</th></tr><tr><td>Wilderness Road</td><td>2</td><td><input aria-label="Wilderness Road nightly rate" id="c1" type="number" min="0" value="18"></td></tr><tr><td>Bandy Creek</td><td>2</td><td><input aria-label="Bandy Creek nightly allowance" id="c2" type="number" min="0" value="25"></td></tr><tr><td>Tellico region</td><td>1</td><td><input aria-label="Tellico nightly allowance" id="c3" type="number" min="0" value="30"></td></tr><tr><td>Townsend</td><td>2</td><td><input aria-label="Townsend nightly allowance" id="c4" type="number" min="0" value="40"></td></tr></table>
+<p><b>Camping allowance: <span id="campTotal"></span></b></p><p>Default camping allowance is $196 for seven nights. Food: $12–18/day × 8 = $96–144. Fuel: use ~1,300–1,500 mi ÷ 50 mpg × $3.50/gal = $91–105 (mileage, mpg and fuel price are assumptions). Coffee $10–20; parking $5–15; contingency $50–75. <b>Rough trip allowance: $448–555</b>, before booking fees/tax or optional paid stops.</p>
+</details>
+<details><summary>Hikes, backups &amp; conditions</summary><p><b>Wed core:</b> Twin Arches Loop, about 4½ mi, moderate, allow 3–4 hours on foot. Trailhead transfer can involve unpaved access; confirm surface conditions and avoid a muddy approach. Backup: John Litton Farm Loop, 6.3 mi from Bandy Creek, or Angel Falls Rapid, 4 mi round trip.</p><p><b>Sat core:</b> Abrams Falls, 5 mi round trip. NPS's August 2026 construction notice says closed Monday–Thursday and open Friday–Sunday, so Oct 10 fits the advertised pattern; recheck before riding to the trailhead. Backup: Chestnut Top, 5.6 mi round trip. Cades Cove traffic can consume hours; choose one hike.</p><p>You plan to ride through rain. Reduce the day's optional mileage in poor visibility; do not count rain as a reason to hurry. A forecast or closure can change the optional route each morning.</p><p>For Smokies trailhead parking longer than 15 minutes, buy/display the required parking tag: $5 daily / $15 weekly. Includes motorcycles. Download trail maps and navigation before departure.</p>
+</details>
+<details><summary>Sources &amp; morning checks</summary><p>Reviewed October 2, 2026. These links verify published information, not campsite availability or a route reservation.</p><p><a href="https://www.nps.gov/cuga/planyourvisit/fees.htm" target="_blank" rel="noopener">Wilderness Road rates / showers</a><br><a href="https://www.nps.gov/biso/planyourvisit/tntrails.htm" target="_blank" rel="noopener">Big South Fork trails</a><br><a href="https://www.nps.gov/biso/planyourvisit/conditions.htm" target="_blank" rel="noopener">Big South Fork conditions</a><br><a href="https://www.nps.gov/grsm/learn/news/great-smoky-mountains-national-park-to-begin-construction-on-abrams-falls-trail-starting-august-24.htm" target="_blank" rel="noopener">Abrams Falls construction notice</a><br><a href="https://www.nps.gov/grsm/planyourvisit/conditions.htm" target="_blank" rel="noopener">Smokies roads / trail conditions</a><br><a href="https://www.nps.gov/grsm/planyourvisit/fees.htm" target="_blank" rel="noopener">Smokies parking tags</a><br><a href="https://www.nps.gov/blri/planyourvisit/roadclosures.htm" target="_blank" rel="noopener">Blue Ridge Parkway closures</a><br><a href="https://www.weather.gov/" target="_blank" rel="noopener">Weather and overnight lows</a></p><p>Each morning: overnight low and rain → route/trail status → camp availability → live ride time → choose optional branch. Reserve core sites once satisfied with the choice.</p></details>
+<div class="attr-section"><div class="hd">📍 Camps, hikes and optional rides · tap pins</div><div id="attrToggles"></div><p id="pinCount"></p><button onclick="window.showAllCamps&&window.showAllCamps()">Show all campgrounds</button><button onclick="window.showEveryPin&&window.showEveryPin()">Show every pin</button></div><details open><summary>Find a pin · tap a name to zoom</summary><div id="pinDirectory"></div></details>
+<div class="tip">Day cards focus the map. Playback follows moving days; stay-put days remain separate cards. Map tiles and road geometry require internet. The written itinerary remains readable offline. Every day has a Google Maps link; hike-day links cover driving to the trailhead, not the hiking trail. Phone route parts keep each link within mobile waypoint limits; use them in order if the full-day link drops stops. Confirm the selected camp entrance before navigating.</div>
+</div><button class="panel-toggle" onclick="document.getElementById('panel').classList.toggle('hidden-panel')">Show / hide plan</button>
 
 <script>
-// ─── ROUTE WAYPOINTS ─────────────────────────────────────────────────
-// Each waypoint = [lng, lat]. legStart marks where each day begins.
-const waypoints = [
-  // FRIDAY — Harrisonburg → Wytheville via US-11 to Roanoke, then I-81 south
-  [-78.8689, 38.4496],  // 0  Harrisonburg (start)
-  [-78.8895, 38.1499],  // 1  Staunton (US-11)
-  [-79.4428, 37.7840],  // 2  Lexington (US-11)
-  [-79.6817, 37.5271],  // 3  Buchanan (US-11 through Natural Bridge)
-  [-79.9414, 37.2710],  // 4  Roanoke (switch to I-81)
-  [-80.4106, 37.1298],  // 5  Christiansburg (I-81)
-  [-80.5556, 37.0298],  // 6  Radford (I-81)
-  [-80.7767, 36.9483],  // 7  Pulaski (I-81)
-  [-81.0876, 36.9484],  // 8  Wytheville / Bland area — FRIDAY CAMP (Walnut Flats)
-
-  // SATURDAY — Wytheville → Cumberland Gap via I-81 to Bristol, then US-25E
-  [-81.5197, 36.7134],  // 9  Marion (I-81)
-  [-81.9773, 36.6437],  // 10 Abingdon (I-81)
-  [-82.1735, 36.5951],  // 11 Bristol VA/TN (I-81 / US-11W split)
-  [-82.5490, 36.5484],  // 12 Kingsport TN (US-11W)
-  [-82.8365, 36.6001],  // 13 approaching Cumberland Gap Tunnel
-  [-83.6598, 36.6021],  // 14 Cumberland Gap / Middlesboro — SATURDAY & SUNDAY CAMP
-
-  // SUNDAY — explore around Cumberland Gap (loop up to Pinnacle & back)
-  [-83.6813, 36.6069],  // 15 Pinnacle Overlook Road up
-  [-83.6754, 36.6089],  // 16 Pinnacle Overlook summit (KY/TN/VA views)
-  [-83.6598, 36.6021],  // 17 back to camp
-
-  // MONDAY — Cumberland Gap → Harrisonburg via US-11 the whole way
-  [-82.8365, 36.6001],  // 18 back through the tunnel to TN
-  [-82.5490, 36.5484],  // 19 Kingsport
-  [-82.1735, 36.5951],  // 20 Bristol
-  [-81.9773, 36.6437],  // 21 Abingdon (US-11 north)
-  [-81.5197, 36.7134],  // 22 Marion
-  [-81.0876, 36.9484],  // 23 Wytheville
-  [-80.7767, 36.9483],  // 24 Pulaski
-  [-80.5556, 37.0298],  // 25 Radford
-  [-80.4106, 37.1298],  // 26 Christiansburg
-  [-79.9414, 37.2710],  // 27 Roanoke
-  [-79.6817, 37.5271],  // 28 Buchanan
-  [-79.4428, 37.7840],  // 29 Lexington
-  [-78.8895, 38.1499],  // 30 Staunton
-  [-78.8689, 38.4496],  // 31 Harrisonburg (home)
-];
-
-const names = [
-  "Harrisonburg (start)", "Staunton", "Lexington", "Buchanan", "Roanoke",
-  "Christiansburg", "Radford", "Pulaski", "Wytheville / Walnut Flats (Fri camp)",
-  "Marion", "Abingdon", "Bristol", "Kingsport", "Cumberland Gap Tunnel",
-  "Cumberland Gap NHP (Sat/Sun camp)",
-  "Pinnacle Rd", "Pinnacle Overlook (KY/TN/VA)", "Back to camp",
-  "Cumberland Gap Tunnel", "Kingsport", "Bristol", "Abingdon",
-  "Marion", "Wytheville", "Pulaski", "Radford", "Christiansburg",
-  "Roanoke", "Buchanan", "Lexington", "Staunton",
-  "Harrisonburg (home)"
-];
-
-// Day segments (indices into waypoints), for coloring the route
-const days = [
-  { name: "Fri",  start: 0,  end: 8,  color: "#0aa"    },
-  { name: "Sat",  start: 8,  end: 14, color: "#c11"    },
-  { name: "Sun",  start: 14, end: 17, color: "#7b2ff7" },
-  { name: "Mon",  start: 17, end: 31, color: "#1f6bff" },
-];
-
+const itinerary = [{"name": "Sun Oct 4", "title": "Reposition to Cumberland Gap", "color": "#0a9292", "points": [[-78.8689, 38.4496], [-81.084, 36.949], [-82.183, 36.596], [-82.564, 36.549], [-83.041, 36.407], [-83.574, 36.455], [-83.632539, 36.60446]], "night": "Wilderness Road · night 1 of 2", "ride": "Long day: roughly 330–380 mi / 6–7½ hours riding, plus stops", "core": "Write at home, then use I-81 / US-11W / US-25E / US-58 to reach camp. Efficient repositioning; no sightseeing checklist.", "option": "One brief view or town stop only if ahead of time.", "cut": "Back of the Dragon and Grayson Highlands detours. Save your energy for new territory.", "nav": "https://www.google.com/maps/dir/?api=1&origin=Harrisonburg%2C+VA&destination=Wilderness+Road+Campground%2C+Cumberland+Gap+National+Historical+Park&travelmode=driving&waypoints=36.949%2C-81.084%7C36.596%2C-82.183%7C36.549%2C-82.564%7C36.407%2C-83.041%7C36.455%2C-83.574", "navLabel": "Open route in Google Maps", "extraNav": [{"label": "Phone route · part 1", "url": "https://www.google.com/maps/dir/?api=1&origin=Harrisonburg%2C+VA&destination=36.407%2C-83.041&travelmode=driving&waypoints=36.949%2C-81.084%7C36.596%2C-82.183%7C36.549%2C-82.564"}, {"label": "Phone route · part 2", "url": "https://www.google.com/maps/dir/?api=1&origin=36.407%2C-83.041&destination=Wilderness+Road+Campground%2C+Cumberland+Gap+National+Historical+Park&travelmode=driving&waypoints=36.455%2C-83.574"}]}, {"name": "Mon Oct 5", "title": "Cumberland Gap decompression", "color": "#9850bd", "points": [[-83.632539, 36.60446]], "night": "Wilderness Road · same campsite", "ride": "Stay put · optional short local ride", "core": "Three hours of writing, breakfast, then explore the historic Gap and nearby trails. Rest and an unhurried evening.", "option": "Pinnacle Overlook or an optional hike selected with a ranger. This is a bonus hiking day, not one of the two anchors.", "cut": "Paid cave tours, distant trailheads and extra mileage.", "nav": "https://www.google.com/maps/dir/?api=1&origin=Wilderness+Road+Campground%2C+Cumberland+Gap+National+Historical+Park&destination=Cumberland+Gap+National+Historical+Park+Visitor+Center%2C+Middlesboro%2C+KY&travelmode=driving", "navLabel": "Open route to Cumberland Gap visitor center", "extraNav": [{"label": "Pinnacle Overlook option", "url": "https://www.google.com/maps/dir/?api=1&origin=Wilderness+Road+Campground%2C+Cumberland+Gap+National+Historical+Park&destination=Pinnacle+Overlook%2C+Cumberland+Gap+National+Historical+Park&travelmode=driving"}, {"label": "Return to Wilderness Road campground", "url": "https://www.google.com/maps/dir/?api=1&origin=Cumberland+Gap+National+Historical+Park+Visitor+Center%2C+Middlesboro%2C+KY&destination=Wilderness+Road+Campground%2C+Cumberland+Gap+National+Historical+Park&travelmode=driving"}]}, {"name": "Tue Oct 6", "title": "Cumberland Gap → Big South Fork", "color": "#c04b27", "points": [[-83.632539, 36.60446], [-83.674, 36.608], [-83.715, 36.734], [-84.159, 36.721], [-84.51, 36.501], [-84.697123, 36.488661]], "night": "Bandy Creek · night 1 of 2", "ride": "Planning allowance: 120–160 mi / 3–4 hours riding", "core": "West through Middlesboro, US-25E / KY-92 toward Williamsburg, then US-27 / TN-297 to Bandy Creek. Fuel and groceries before camp.", "option": "A short overlook or town break; keep the afternoon spacious.", "cut": "Extra loops and a second attraction after camp setup.", "nav": "https://www.google.com/maps/dir/?api=1&origin=Wilderness+Road+Campground%2C+Cumberland+Gap+National+Historical+Park&destination=Bandy+Creek+Campground%2C+Big+South+Fork%2C+Tennessee&travelmode=driving&waypoints=36.608%2C-83.674%7C36.734%2C-83.715%7C36.721%2C-84.159%7C36.501%2C-84.51", "navLabel": "Open route in Google Maps", "extraNav": [{"label": "Phone route · part 1", "url": "https://www.google.com/maps/dir/?api=1&origin=Wilderness+Road+Campground%2C+Cumberland+Gap+National+Historical+Park&destination=36.501%2C-84.51&travelmode=driving&waypoints=36.608%2C-83.674%7C36.734%2C-83.715%7C36.721%2C-84.159"}, {"label": "Phone route · part 2", "url": "https://www.google.com/maps/dir/?api=1&origin=36.501%2C-84.51&destination=Bandy+Creek+Campground%2C+Big+South+Fork%2C+Tennessee&travelmode=driving"}]}, {"name": "Wed Oct 7", "title": "Hiking anchor 1 · Big South Fork", "color": "#418547", "points": [[-84.697123, 36.488661]], "night": "Bandy Creek · same campsite", "ride": "No camp move · local trailhead transfer only", "core": "Write → breakfast → Twin Arches Loop, about 4½ miles and 3–4 hours hiking → return to camp → shower, cook and rest. Allow extra time for trailhead travel.", "option": "John Litton Farm Loop, 6.3 mi from Bandy Creek, avoids the Twin Arches trailhead transfer. Angel Falls Rapid is a shorter 4 mi round trip backup.", "cut": "Honey Creek: strenuous, slow and unsuitable for a replenishing day after heavy rain. Do not stack another hike.", "nav": "https://www.google.com/maps/dir/?api=1&origin=Bandy+Creek+Campground%2C+Big+South+Fork%2C+Tennessee&destination=Twin+Arches+Trailhead%2C+Big+South+Fork%2C+Tennessee&travelmode=driving", "navLabel": "Open route to Twin Arches trailhead", "extraNav": [{"label": "Return to Bandy Creek", "url": "https://www.google.com/maps/dir/?api=1&origin=Twin+Arches+Trailhead%2C+Big+South+Fork%2C+Tennessee&destination=Bandy+Creek+Campground%2C+Big+South+Fork%2C+Tennessee&travelmode=driving"}, {"label": "Backup: Bandy Creek trailhead", "url": "https://www.google.com/maps/dir/?api=1&origin=Bandy+Creek+Campground%2C+Big+South+Fork%2C+Tennessee&destination=Bandy+Creek+Trailhead%2C+Tennessee&travelmode=driving"}]}, {"name": "Thu Oct 8", "title": "Big South Fork → Tellico region", "color": "#b07900", "points": [[-84.697123, 36.488661], [-84.512, 36.498], [-84.561, 36.105], [-84.527, 35.915], [-84.68, 35.743], [-84.602, 35.52], [-84.294, 35.363], [-84.1072222, 35.4016667]], "night": "Indian Boundary candidate · 1 night", "ride": "Planning allowance: 170–220 mi / 4–5 hours riding", "core": "TN-297 → US-27 via Wartburg → TN-68 via Sweetwater and Tellico Plains. Buy groceries before leaving town, then camp near the Cherohala approach.", "option": "A Tellico Plains coffee and charging stop if open; a short river stop.", "cut": "Waterfall detours, Knoxville city sightseeing and extra ridge loops.", "nav": "https://www.google.com/maps/dir/?api=1&origin=Bandy+Creek+Campground%2C+Big+South+Fork%2C+Tennessee&destination=Indian+Boundary+Campground%2C+Tennessee&travelmode=driving&waypoints=36.498%2C-84.512%7C36.105%2C-84.561%7C35.915%2C-84.527%7C35.743%2C-84.68%7C35.52%2C-84.602%7C35.363%2C-84.294", "navLabel": "Open route in Google Maps", "extraNav": [{"label": "Phone route · part 1", "url": "https://www.google.com/maps/dir/?api=1&origin=Bandy+Creek+Campground%2C+Big+South+Fork%2C+Tennessee&destination=35.743%2C-84.68&travelmode=driving&waypoints=36.498%2C-84.512%7C36.105%2C-84.561%7C35.915%2C-84.527"}, {"label": "Phone route · part 2", "url": "https://www.google.com/maps/dir/?api=1&origin=35.743%2C-84.68&destination=Indian+Boundary+Campground%2C+Tennessee&travelmode=driving&waypoints=35.52%2C-84.602%7C35.363%2C-84.294"}]}, {"name": "Fri Oct 9", "title": "Cherohala + Dragon → Townsend", "color": "#d02665", "points": [[-84.1072222, 35.4016667], [-84.045, 35.341], [-83.949, 35.319], [-83.804, 35.323], [-83.866, 35.364], [-83.921, 35.467], [-84.009, 35.533], [-84.052, 35.563], [-83.984, 35.649], [-83.77345955, 35.68034299]], "night": "Townsend / Little River candidate · night 1 of 2", "ride": "Planning allowance: 140–180 mi / 4–5 hours riding, plus viewpoints", "core": "Cherohala Skyway east on TN-165 / NC-143 → Robbinsville → US-129 north through Deals Gap and the Dragon → US-321 to Townsend. Protect the scenic riding day.", "option": "Foothills Parkway toward Walland if time, visibility and energy allow. Keep scenic stops short enough to reach camp by 5:30.", "cut": "Cut the Dragon first if tired or in heavy rain: from Robbinsville use US-129 south / US-74 east to Cherokee, US-441 over Newfound Gap, then Little River Road to Townsend. Check road status and compare actual travel time first; this is another mountain route, not a guaranteed fast shortcut.", "nav": "https://www.google.com/maps/dir/?api=1&origin=Indian+Boundary+Campground%2C+Tennessee&destination=Little+River+Campground%2C+7261+E+Lamar+Alexander+Pkwy%2C+Townsend%2C+TN&travelmode=driving&waypoints=35.341%2C-84.045%7C35.319%2C-83.949%7C35.323%2C-83.804%7C35.364%2C-83.866%7C35.467%2C-83.921%7C35.533%2C-84.009%7C35.563%2C-84.052%7C35.649%2C-83.984", "navLabel": "Open route in Google Maps", "extraNav": [{"label": "Phone route · part 1", "url": "https://www.google.com/maps/dir/?api=1&origin=Indian+Boundary+Campground%2C+Tennessee&destination=35.364%2C-83.866&travelmode=driving&waypoints=35.341%2C-84.045%7C35.319%2C-83.949%7C35.323%2C-83.804"}, {"label": "Phone route · part 2", "url": "https://www.google.com/maps/dir/?api=1&origin=35.364%2C-83.866&destination=35.649%2C-83.984&travelmode=driving&waypoints=35.467%2C-83.921%7C35.533%2C-84.009%7C35.563%2C-84.052"}, {"label": "Phone route · part 3", "url": "https://www.google.com/maps/dir/?api=1&origin=35.649%2C-83.984&destination=Little+River+Campground%2C+7261+E+Lamar+Alexander+Pkwy%2C+Townsend%2C+TN&travelmode=driving"}]}, {"name": "Sat Oct 10", "title": "Hiking anchor 2 · Smokies", "color": "#507db0", "points": [[-83.77345955, 35.68034299]], "night": "Townsend · same campsite", "ride": "No camp move · local trailhead transfer only", "core": "Write → breakfast → one 4–7 mi hike → return to the same camp. Abrams Falls is 5 mi round trip; allow 3–4 hours hiking plus Cades Cove traffic.", "option": "Chestnut Top, 5.6 mi round trip, near the Townsend Wye, avoids the Cades Cove traffic loop. Confirm current trail conditions.", "cut": "A full Cades Cove sightseeing circuit plus a second hike. Saturday relocation is available below if Sunday needs to be shorter.", "nav": "https://www.google.com/maps/dir/?api=1&origin=Little+River+Campground%2C+7261+E+Lamar+Alexander+Pkwy%2C+Townsend%2C+TN&destination=Abrams+Falls+Trailhead%2C+Cades+Cove%2C+Tennessee&travelmode=driving", "navLabel": "Open route to Abrams Falls trailhead", "extraNav": [{"label": "Return to Townsend camp", "url": "https://www.google.com/maps/dir/?api=1&origin=Abrams+Falls+Trailhead%2C+Cades+Cove%2C+Tennessee&destination=Little+River+Campground%2C+7261+E+Lamar+Alexander+Pkwy%2C+Townsend%2C+TN&travelmode=driving"}, {"label": "Backup: Chestnut Top trailhead", "url": "https://www.google.com/maps/dir/?api=1&origin=Little+River+Campground%2C+7261+E+Lamar+Alexander+Pkwy%2C+Townsend%2C+TN&destination=Chestnut+Top+Trailhead%2C+Townsend%2C+Tennessee&travelmode=driving"}]}, {"name": "Sun Oct 11", "title": "Return to Harrisonburg", "color": "#2548b4", "points": [[-83.77345955, 35.68034299], [-83.55, 35.786], [-83.478, 35.868], [-83.182, 36.008], [-82.831, 36.069], [-82.184, 36.595], [-81.084, 36.949], [-79.94, 37.271], [-78.8689, 38.4496]], "night": "Home · no accommodation cost", "ride": "Long day: roughly 400–440 mi / 7–8 hours riding on this hybrid return", "core": "Write → break camp → a scenic foothills start via Wears Valley / Sevierville / Newport → US-25W/70 toward I-81 → Valley return. This is a long final day, not an all-back-road ride.", "option": "One short US-11 section or viewpoint only if the live ETA leaves margin. The Blue Ridge Parkway is not the default return.", "cut": "Full Parkway return and extended VA-16 / US-58 loops. If the live ETA exceeds your evening margin, use the direct I-81 route. See Saturday relocation alternative below.", "nav": "https://www.google.com/maps/dir/?api=1&origin=Little+River+Campground%2C+7261+E+Lamar+Alexander+Pkwy%2C+Townsend%2C+TN&destination=Harrisonburg%2C+VA&travelmode=driving&waypoints=35.786%2C-83.55%7C35.868%2C-83.478%7C36.008%2C-83.182%7C36.069%2C-82.831%7C36.595%2C-82.184%7C36.949%2C-81.084%7C37.271%2C-79.94", "navLabel": "Open route in Google Maps", "extraNav": [{"label": "Phone route · part 1", "url": "https://www.google.com/maps/dir/?api=1&origin=Little+River+Campground%2C+7261+E+Lamar+Alexander+Pkwy%2C+Townsend%2C+TN&destination=36.069%2C-82.831&travelmode=driving&waypoints=35.786%2C-83.55%7C35.868%2C-83.478%7C36.008%2C-83.182"}, {"label": "Phone route · part 2", "url": "https://www.google.com/maps/dir/?api=1&origin=36.069%2C-82.831&destination=Harrisonburg%2C+VA&travelmode=driving&waypoints=36.595%2C-82.184%7C36.949%2C-81.084%7C37.271%2C-79.94"}]}];
+document.getElementById('itinerary').innerHTML = itinerary.map((d,i)=>`<details ${i===0?'open':''} class="daycard" style="--day:${d.color}"><summary>${d.name} · ${d.title}</summary><p><b>${d.ride}</b><br>⛺ ${d.night}</p><p><span class="badge">CORE</span> ${d.core}</p><p><span class="badge">OPTION</span> ${d.option}</p><p><span class="badge">CUT FIRST</span> ${d.cut}</p><button onclick="focusDay(${i})">Show day on map</button> <p><a href="${d.nav}" target="_blank" rel="noopener">${d.navLabel}</a></p>${d.extraNav.map(n=>`<p><a href="${n.url}" target="_blank" rel="noopener">${n.label}</a></p>`).join('')}</details>`).join('');
+function budget(){const n=id=>Math.max(0,Number(document.getElementById(id).value)||0);document.getElementById('campTotal').textContent='$'+(2*n('c1')+2*n('c2')+n('c3')+2*n('c4')).toFixed(2);}
+['c1','c2','c3','c4'].forEach(id=>document.getElementById(id).addEventListener('input',budget));budget();
+function focusDay(i){if(window.focusMapDay)window.focusMapDay(i);}
+const waypoints = itinerary.flatMap(d=>d.points);
+const names = itinerary.flatMap(d=>d.points.map((p,i)=>i===d.points.length-1?d.night:d.title));
+const days = [];
+if(typeof L==='undefined'){document.querySelectorAll('#controls button').forEach(b=>b.disabled=true);document.getElementById('status').textContent='Map library unavailable. The full itinerary below still works; reconnect and reload for the map.';}else{
 // ─── MAP SETUP ────────────────────────────────────────────────────────
 const map = L.map('map',{preferCanvas:true, zoomControl:false}).setView([37.5,-81.0],7);
 L.control.zoom({position:'topright'}).addTo(map);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+// Live device location, separate from the simulated motorcycle route.
+let locationWatchId=null, locationMarker=null, locationAccuracy=null;
+let centerNextLocation=false;
+const locationControl=L.control({position:'bottomright'});
+locationControl.onAdd=function(){
+  const box=L.DomUtil.create('div','location-control');
+  box.innerHTML='<button type="button" id="showLocationBtn">📍 Show my location</button><button type="button" id="stopLocationBtn" class="location-stop" hidden>Stop</button><div id="locationStatus" class="location-status" role="status" aria-live="polite">Tap to allow location access.</div>';
+  L.DomEvent.disableClickPropagation(box);
+  L.DomEvent.disableScrollPropagation(box);
+  return box;
+};
+locationControl.addTo(map);
+const showLocationBtn=document.getElementById('showLocationBtn');
+const stopLocationBtn=document.getElementById('stopLocationBtn');
+const locationStatus=document.getElementById('locationStatus');
+function endLocationWatch(){
+  if(locationWatchId!==null){navigator.geolocation.clearWatch(locationWatchId);locationWatchId=null;}
+  stopLocationBtn.hidden=true;
+  showLocationBtn.textContent='📍 Show my location';
+}
+function receiveLocation(position){
+  const {latitude,longitude,accuracy}=position.coords;
+  const ll=[latitude,longitude];
+  const meters=Math.round(accuracy);
+  const updated=new Date(position.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const info='Your current location<br>Estimated accuracy: ±'+meters+' m<br>Updated: '+updated;
+  if(!locationMarker){
+    locationMarker=L.marker(ll,{icon:L.divIcon({className:'live-location-marker',html:'<div class="location-dot"></div>',iconSize:[22,22],iconAnchor:[11,11]}),zIndexOffset:3000,title:'Your current location'}).addTo(map).bindPopup(info);
+    locationAccuracy=L.circle(ll,{radius:accuracy,color:'#1479ed',weight:1,fillColor:'#1479ed',fillOpacity:0.12,interactive:false}).addTo(map);
+  }else{
+    locationMarker.setLatLng(ll).setPopupContent(info);
+    locationAccuracy.setLatLng(ll).setRadius(accuracy);
+  }
+  locationStatus.textContent='Location updating · ±'+meters+' m · '+updated;
+  showLocationBtn.textContent='📍 Center on me';
+  if(centerNextLocation){map.setView(ll,Math.min(16,Math.max(12,map.getZoom())));centerNextLocation=false;}
+}
+function locationFailed(error){
+  const lastKnown=locationMarker?' The blue marker is your last known position.':'';
+  if(error.code===1){
+    endLocationWatch();
+    locationStatus.textContent='Location access blocked. Allow location in browser and device settings, then try again. Some browsers block local HTML files; use an HTTPS page if needed.'+lastKnown;
+  }else if(error.code===3){
+    locationStatus.textContent='Location timed out. Waiting for a signal; check device location settings or try outdoors.'+lastKnown;
+  }else{
+    locationStatus.textContent='Location unavailable. Check device location settings and signal.'+lastKnown;
+  }
+}
+showLocationBtn.addEventListener('click',()=>{
+  pause();
+  if(!navigator.geolocation){locationStatus.textContent='This browser cannot access location. Try a browser with location support.';return;}
+  if(window.isSecureContext===false){locationStatus.textContent='This browser requires a secure page for location. Open this map over HTTPS or localhost.';return;}
+  centerNextLocation=true;
+  if(locationWatchId!==null){
+    if(locationMarker){map.setView(locationMarker.getLatLng(),Math.min(16,Math.max(12,map.getZoom())));centerNextLocation=false;}
+    return;
+  }
+  locationStatus.textContent='Finding your location… Allow access when your browser asks.';
+  stopLocationBtn.hidden=false;
+  try{
+    locationWatchId=navigator.geolocation.watchPosition(receiveLocation,locationFailed,{enableHighAccuracy:true,timeout:20000,maximumAge:5000});
+  }catch(error){endLocationWatch();locationStatus.textContent='Location could not start. Check browser permissions; this browser may require the map to be opened over HTTPS.';}
+});
+stopLocationBtn.addEventListener('click',()=>{
+  endLocationWatch();centerNextLocation=false;
+  if(locationMarker){map.removeLayer(locationMarker);locationMarker=null;}
+  if(locationAccuracy){map.removeLayer(locationAccuracy);locationAccuracy=null;}
+  locationStatus.textContent='Location stopped. Tap to show it again.';
+});
+window.addEventListener('pagehide',endLocationWatch);
+
+// USGS provides the background tiles; no OpenStreetMap tile-server requests.
+const basemap = L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',{
   maxZoom:18,
-  attribution:'© OpenStreetMap contributors'
-}).addTo(map);
+  attribution:'<a href="https://www.usgs.gov/the-national-map-data-delivery" target="_blank" rel="noopener">USGS The National Map</a> · USGS, USFS, Census, Natural Earth, NOAA and partners',
+  errorTileUrl:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#e8ede7"/></svg>')
+});
+let tileFailures=0;
+basemap.on('tileerror',()=>{
+  tileFailures++;
+  if(tileFailures>=3){document.getElementById('basemapNotice').hidden=false;}
+});
+basemap.on('tileload',()=>{tileFailures=0;document.getElementById('basemapNotice').hidden=true;});
+basemap.addTo(map);
 
 // State labels (Virginia, Kentucky, Tennessee)
 const stateLabels = {
@@ -150,97 +185,28 @@ Object.entries(stateLabels).forEach(([n,ll])=>{
   })}).addTo(map);
 });
 
-// Waypoint dots + tooltips
-waypoints.forEach((p,i)=>{
-  const isEndpoint = (i===0 || i===waypoints.length-1);
-  const isCamp = (i===8 || i===14);
-  const isOverlook = (i===16);
-  L.circleMarker([p[1],p[0]],{
-    radius: isEndpoint?7 : (isCamp||isOverlook)?6 : 3,
-    weight:1,
-    color:'#111',
-    fillColor: isEndpoint?'#111' : isCamp?'#c11' : isOverlook?'#7b2ff7' : '#666',
-    fillOpacity:.9
-  }).bindTooltip(names[i],{permanent:false,direction:'top'}).addTo(map);
-});
-
-// Persistent labels for the key stops
-[
-  {i:0,  text:"🏁 Harrisonburg"},
-  {i:8,  text:"⛺ Fri camp (Walnut Flats)"},
-  {i:14, text:"⛺ Sat/Sun camp (Wilderness Road CG)"},
-  {i:16, text:"👁 Pinnacle Overlook (3 states)"},
-].forEach(({i,text})=>{
-  L.marker([waypoints[i][1],waypoints[i][0]],{
-    interactive:false,
-    icon:L.divIcon({className:'stop-label',html:text,iconSize:[null,null]})
-  }).addTo(map);
-});
-
+// Camps are drawn once, in the POI layer, rather than duplicated per overnight.
 // ─── ATTRACTIONS (categorized points of interest) ─────────────────────
-const attrCats = {
-  over: { label:"Overlooks & big views",      color:"#f28c00", emoji:"🔭" },
-  cave: { label:"Caves, caverns & stone",     color:"#8b5a2b", emoji:"🪨" },
-  road: { label:"Roads worth riding",         color:"#d61f5a", emoji:"🏍" },
-  hist: { label:"Living history",             color:"#2e8b3d", emoji:"🏛" },
-  town: { label:"Towns, theatre & music",     color:"#a83bd6", emoji:"🎭" },
-  odd:  { label:"Offbeat roadside Americana", color:"#0a9aa0", emoji:"🦕" },
-};
-
-const attractions = [
-  // Overlooks & big views
-  { cat:"over", name:"Mill Mountain Star",          lat:37.2506, lng:-79.9319, when:"Fri or Mon · Roanoke",       blurb:"World's largest illuminated star, with a downtown overlook. Drive-up." },
-  { cat:"over", name:"Big Walker Lookout",          lat:37.0027, lng:-81.1310, when:"Fri · near camp",            blurb:"100-ft tower + country store on US-52 north of Wytheville." },
-  { cat:"over", name:"White Rocks Overlook",        lat:36.6230, lng:-83.4130, when:"Sun · east end of Gap",      blurb:"The earned version of the big view: a long, steep hike, not a drive-up." },
-  { cat:"over", name:"Grayson Highlands (ponies)",  lat:36.6280, lng:-81.5060, when:"Detour via US-58",           blurb:"Wild ponies + high-country balds. A real detour off Marion, but iconic." },
-
-  // Caves, caverns & stone
-  { cat:"cave", name:"Natural Bridge",              lat:37.6273, lng:-79.5433, when:"Fri or Mon · on US-11",      blurb:"215-ft limestone arch once owned by Jefferson; trail under it to Lace Falls." },
-  { cat:"cave", name:"Grand Caverns",               lat:38.2670, lng:-78.8370, when:"Fri or Mon · near Staunton", blurb:"Classic show cave a few miles off the Valley spine." },
-  { cat:"cave", name:"Dixie Caverns",               lat:37.2358, lng:-80.1466, when:"Fri or Mon · near Salem",    blurb:"Show cave just off I-81 near Roanoke." },
-  { cat:"cave", name:"Gap Cave",                    lat:36.6033, lng:-83.6772, when:"Sun · verify season!",       blurb:"183-step ranger-led descent. Often closed by ~Sept 30 for bats — confirm first." },
-
-  // Roads worth riding
-  { cat:"road", name:"Back of the Dragon (VA-16)",  lat:36.8780, lng:-81.5230, when:"Sat · off Marion",          blurb:"32 mi, 400+ curves up to Tazewell. THE rider road here. Out-and-back ~1.5–2 hrs." },
-  { cat:"road", name:"Goshen Pass (VA-39)",         lat:37.9950, lng:-79.4900, when:"Detour W of Lexington",     blurb:"Short, pretty river-gorge sweeper set if you want one more good road." },
-
-  // Living history
-  { cat:"hist", name:"Frontier Culture Museum",     lat:38.1290, lng:-78.9060, when:"Fri or Mon · Staunton",     blurb:"Outdoor living-history farms with costumed interpreters." },
-  { cat:"hist", name:"Hensley Settlement",          lat:36.6640, lng:-83.5230, when:"Sun · reserve day before",  blurb:"Preserved 1900s mountain village atop Brush Mtn. Ranger shuttle, Fri–Mon 10am." },
-  { cat:"hist", name:"Cumberland Gap / Tri-State",  lat:36.6015, lng:-83.6810, when:"Sun",                       blurb:"Walk the actual pioneer notch + Civil War forts. Where ~300k settlers crossed." },
-
-  // Towns, theatre & music
-  { cat:"town", name:"Staunton downtown",           lat:38.1496, lng:-79.0716, when:"Fri or Mon",                blurb:"Beverley St + the American Shakespeare Center's Blackfriars Playhouse." },
-  { cat:"town", name:"Lexington downtown",          lat:37.7840, lng:-79.4430, when:"Fri or Mon",                blurb:"Historic streets, W&L + VMI, Stonewall Jackson's grave." },
-  { cat:"town", name:"Marion — Lincoln Theatre",    lat:36.8346, lng:-81.5145, when:"Sat · on route",            blurb:"Art-deco theatre, home of bluegrass TV show 'Song of the Mountains'." },
-  { cat:"town", name:"Abingdon — Barter Theatre",   lat:36.7096, lng:-81.9773, when:"Sat · on route",            blurb:"State Theatre of VA + Martha Washington Inn + Creeper Trail. Richest town stop." },
-  { cat:"town", name:"Bristol — Country Music",     lat:36.5963, lng:-82.1840, when:"Sat · on route",            blurb:"Birthplace of Country Music Museum (Smithsonian), walkable State Street." },
-
-  // Offbeat roadside Americana
-  { cat:"odd",  name:"Dinosaur Kingdom II",         lat:37.6300, lng:-79.5450, when:"Fri or Mon · Nat. Bridge",  blurb:"Mark Cline's gloriously weird sculpture park: dinosaurs vs. Civil War." },
-  { cat:"odd",  name:"Black Dog Salvage",           lat:37.2670, lng:-79.9640, when:"Fri or Mon · Roanoke",      blurb:"Architectural salvage yard from the 'Salvage Dogs' TV show." },
-  { cat:"odd",  name:"VA Museum of Transportation", lat:37.2760, lng:-79.9440, when:"Fri or Mon · Roanoke",      blurb:"Big steam & diesel locomotives." },
-];
-
+const attrCats = {camp:{label:'Camp candidates & showers',color:'#007e86',emoji:'⛺'},hike:{label:'Hiking anchors & backups',color:'#418547',emoji:'🥾'},road:{label:'Scenic roads / optional branches',color:'#d02665',emoji:'🏍'},over:{label:'Overlooks',color:'#b07900',emoji:'🔭'},town:{label:'Towns / supplies / visitor centers',color:'#9850bd',emoji:'☕'},hist:{label:'History',color:'#8b633b',emoji:'🏛'},cave:{label:'Caves / natural stone',color:'#795548',emoji:'🪨'},odd:{label:'Original-map roadside stops',color:'#607d8b',emoji:'📍'}};
+const attractions = [{"cat": "camp", "name": "Wilderness Road campground", "lng": -83.632539, "lat": 36.60446, "when": "Oct 4–5", "blurb": "CORE · $18 non-electric; showers. Location from Recreation.gov.", "source": "https://www.recreation.gov/camping/campgrounds/258617", "label": "Wilderness Road · Oct 4–5", "primary": true, "maps": "https://www.google.com/maps/search/?api=1&query=Wilderness+Road+Campground%2C+Ewing%2C+VA"}, {"cat": "camp", "name": "Bandy Creek campground", "lng": -84.697123, "lat": 36.488661, "when": "Oct 6–7", "blurb": "CORE · showers; confirm current tent rate. Two-night hiking base. Location from an NPS campground event.", "source": "https://www.nps.gov/biso/planyourvisit/bandycreekcampground.htm", "label": "Bandy Creek · Oct 6–7", "primary": true, "maps": "https://www.google.com/maps/search/?api=1&query=Bandy+Creek+Campground%2C+Tennessee"}, {"cat": "camp", "name": "Indian Boundary campground candidate", "lng": -84.1072222, "lat": 35.4016667, "when": "Oct 8", "blurb": "OPTION · confirm seasonal availability, facilities and price. Consider lower Tellico valley if cold. Location from Recreation.gov.", "source": "https://www.recreation.gov/camping/campgrounds/232215", "label": "Indian Boundary · Oct 8", "primary": true, "maps": "https://www.google.com/maps/search/?api=1&query=Indian+Boundary+Campground%2C+Tennessee"}, {"cat": "camp", "name": "Little River / Townsend camp candidate", "lng": -83.77345955, "lat": 35.68034299, "when": "Oct 9–10", "blurb": "OPTION · advertised Wi-Fi, tent sites and bathhouse; get an actual quote. Camp location from The Dyrt; address confirmed on campground website.", "source": "https://www.littlerivercampground.com/", "label": "Little River · Oct 9–10", "primary": true, "maps": "https://www.google.com/maps/search/?api=1&query=Little+River+Campground%2C+7261+E+Lamar+Alexander+Pkwy%2C+Townsend+TN"}, {"cat": "hike", "name": "Twin Arches trailhead", "lng": -84.74162, "lat": 36.54435, "when": "Wed Oct 7", "blurb": "CORE · about 4½ miles, moderate, 3–4 hours. Confirm unpaved trailhead access. Trailhead pin rather than the arches themselves.", "maps": "https://www.google.com/maps/search/?api=1&query=Twin+Arches+trailhead"}, {"cat": "hike", "name": "Bandy Creek / John Litton Farm Loop", "lng": -84.6958, "lat": 36.4858, "when": "Wed backup", "blurb": "OPTION · 6.3 miles from Bandy Creek; avoids remote Twin Arches trailhead transfer. Approximate trailhead area; confirm on the park map.", "maps": "https://www.google.com/maps/search/?api=1&query=Bandy+Creek+%2F+John+Litton+Farm+Loop"}, {"cat": "hike", "name": "Abrams Falls trailhead", "lng": -83.85235, "lat": 35.59105, "when": "Sat Oct 10", "blurb": "CORE · 5 miles. Construction notice permits Fri–Sun; check conditions. Pin marks the parking / trailhead area.", "maps": "https://www.google.com/maps/search/?api=1&query=Abrams+Falls+trailhead"}, {"cat": "hike", "name": "Chestnut Top trailhead", "lng": -83.708, "lat": 35.659, "when": "Sat backup", "blurb": "OPTION · 5.6 mi round trip near Townsend Wye. Confirm trailhead on official map.", "maps": "https://www.google.com/maps/search/?api=1&query=Chestnut+Top+trailhead"}, {"cat": "road", "name": "Cherohala Skyway", "lng": -83.949, "lat": 35.319, "when": "Fri Oct 9", "blurb": "CORE · sweeping mountain views. Ride at altitude, descend for the night.", "maps": "https://www.google.com/maps/search/?api=1&query=Cherohala+Skyway"}, {"cat": "road", "name": "Tail of the Dragon", "lng": -83.96, "lat": 35.506, "when": "Fri Oct 9", "blurb": "OPTION / CUT FIRST · US-129 technical curves. Keep only if rested and conditions suitable.", "maps": "https://www.google.com/maps/search/?api=1&query=Tail+of+the+Dragon"}, {"cat": "road", "name": "Foothills Parkway", "lng": -83.928, "lat": 35.677, "when": "Fri option", "blurb": "OPTION · viewpoints toward Walland; check open segments.", "maps": "https://www.google.com/maps/search/?api=1&query=Foothills+Parkway"}, {"cat": "road", "name": "Back of the Dragon", "lng": -81.528, "lat": 36.96, "when": "Return alternative only", "blurb": "CUT FIRST · VA-16, a substantial detour; not on default Sunday return.", "maps": "https://www.google.com/maps/search/?api=1&query=Back+of+the+Dragon"}, {"cat": "over", "name": "Pinnacle Overlook", "lng": -83.681, "lat": 36.607, "when": "Mon Oct 5", "blurb": "OPTION · decompression day; confirm road access with a ranger.", "maps": "https://www.google.com/maps/search/?api=1&query=Pinnacle+Overlook"}, {"cat": "town", "name": "Tellico Plains", "lng": -84.294, "lat": 35.363, "when": "Thu Oct 8", "blurb": "CORE supply stop · buy cooking supplies, fuel and recharge before the ridge camp.", "maps": "https://www.google.com/maps/search/?api=1&query=Tellico+Plains"}, {"cat": "town", "name": "Townsend", "lng": -83.755, "lat": 35.675, "when": "Fri–Sun", "blurb": "Coffee / charging option when open. Early writing starts at camp.", "maps": "https://www.google.com/maps/search/?api=1&query=Townsend"}, {"cat": "road", "name": "Goshen Pass", "lng": -79.49, "lat": 37.995, "when": "Saturday relocation alternative", "blurb": "OPTION · only after moving northeast Saturday; do not add to the long default Sunday.", "maps": "https://www.google.com/maps/search/?api=1&query=Goshen+Pass"}, {"cat": "camp", "name": "Cades Cove campground · alternative", "lng": -83.7746, "lat": 35.6031, "when": "Smokies alternative · not booked", "blurb": "Alternative campground mentioned in the plan. No campground showers; use a separate shower option. Check rate and availability. Approximate campground area.", "source": "https://www.nps.gov/grsm/planyourvisit/cades-cove-campground.htm", "label": "Cades Cove · alternative", "primary": false, "maps": "https://www.google.com/maps/search/?api=1&query=Cades+Cove+campground"}, {"cat": "camp", "name": "Walnut Flats campground · previously visited", "lng": -80.8859111, "lat": 37.198176, "when": "Reference only · outside default loop", "blurb": "Your previous stopping point. Included for orientation; not one of the seven planned nights.", "label": "Walnut Flats · previous trip", "primary": false, "maps": "https://www.google.com/maps/search/?api=1&query=Walnut+Flats+campground"}, {"cat": "town", "name": "Cumberland Gap visitor center", "lng": -83.660143, "lat": 36.601843, "when": "Mon Oct 5", "blurb": "Ranger information, trail maps and day planning. Published NPS event coordinates; confirm entrance on navigation.", "source": "https://www.nps.gov/cuga/planyourvisit/visitorcenter.htm", "maps": "https://www.google.com/maps/search/?api=1&query=Cumberland+Gap+visitor+center"}, {"cat": "hist", "name": "Historic Cumberland Gap / Tri-State area", "lng": -83.681, "lat": 36.6015, "when": "Mon Oct 5", "blurb": "Optional historic Gap exploration on the rest day. Approximate area; walk using a park trail map.", "maps": "https://www.google.com/maps/search/?api=1&query=Historic+Cumberland+Gap+%2F+Tri-State+area"}, {"cat": "hike", "name": "Angel Falls Rapid · Leatherwood Ford trailhead", "lng": -84.666, "lat": 36.478, "when": "Wed Oct 7 backup", "blurb": "Four-mile round-trip backup from Leatherwood Ford. Approximate trailhead area; confirm exact parking with NPS.", "maps": "https://www.google.com/maps/search/?api=1&query=Angel+Falls+Rapid"}, {"cat": "town", "name": "Bandy Creek visitor center", "lng": -84.699, "lat": 36.485, "when": "Oct 6–7", "blurb": "Daytime information / connectivity option near the hiking base. Approximate visitor-center location.", "maps": "https://www.google.com/maps/search/?api=1&query=Bandy+Creek+visitor+center"}, {"cat": "over", "name": "Cades Cove loop / entrance", "lng": -83.772, "lat": 35.607, "when": "Sat Oct 10", "blurb": "Optional valley sightseeing or approach to Abrams Falls. One-way road; traffic can consume several hours. Approximate entrance area.", "maps": "https://www.google.com/maps/search/?api=1&query=Cades+Cove+loop+%2F+entrance"}, {"cat": "town", "name": "Robbinsville", "lng": -83.804, "lat": 35.323, "when": "Fri Oct 9", "blurb": "Town waypoint between Cherohala and the Dragon; fuel and groceries.", "maps": "https://www.google.com/maps/search/?api=1&query=Robbinsville"}, {"cat": "road", "name": "Deals Gap / Dragon south end", "lng": -83.9207, "lat": 35.4666, "when": "Fri Oct 9", "blurb": "US-129 route anchor at the south end of the Dragon. Optional stop.", "maps": "https://www.google.com/maps/search/?api=1&query=Deals+Gap+%2F+Dragon+south+end"}, {"cat": "road", "name": "Newfound Gap", "lng": -83.424, "lat": 35.611, "when": "Dragon-cut alternative", "blurb": "US-441 mountain pass on the alternative through Cherokee. Check visibility and road status; approximate overlook location.", "maps": "https://www.google.com/maps/search/?api=1&query=Newfound+Gap"}, {"cat": "town", "name": "Cherokee", "lng": -83.32, "lat": 35.477, "when": "Dragon-cut alternative", "blurb": "Town waypoint for the alternative via US-74 / US-441. Not on the default colored route.", "maps": "https://www.google.com/maps/search/?api=1&query=Cherokee"}, {"cat": "town", "name": "Walland", "lng": -83.813, "lat": 35.729, "when": "Foothills Parkway option", "blurb": "Town / connecting-road waypoint; optional branch.", "maps": "https://www.google.com/maps/search/?api=1&query=Walland"}, {"cat": "town", "name": "Harrisonburg", "lng": -78.8689, "lat": 38.4496, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Harrisonburg"}, {"cat": "town", "name": "Wytheville", "lng": -81.084, "lat": 36.949, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Wytheville"}, {"cat": "town", "name": "Bristol", "lng": -82.184, "lat": 36.595, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Bristol"}, {"cat": "town", "name": "Kingsport", "lng": -82.564, "lat": 36.549, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Kingsport"}, {"cat": "town", "name": "Middlesboro", "lng": -83.715, "lat": 36.609, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Middlesboro"}, {"cat": "town", "name": "Williamsburg, Kentucky", "lng": -84.159, "lat": 36.736, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Williamsburg%2C+Kentucky"}, {"cat": "town", "name": "Oneida", "lng": -84.51, "lat": 36.501, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Oneida"}, {"cat": "town", "name": "Wartburg", "lng": -84.594, "lat": 36.104, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Wartburg"}, {"cat": "town", "name": "Sweetwater", "lng": -84.462, "lat": 35.602, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Sweetwater"}, {"cat": "town", "name": "Wears Valley", "lng": -83.55, "lat": 35.786, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Wears+Valley"}, {"cat": "town", "name": "Sevierville", "lng": -83.562, "lat": 35.868, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Sevierville"}, {"cat": "town", "name": "Newport", "lng": -83.182, "lat": 35.967, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Newport"}, {"cat": "town", "name": "Roanoke", "lng": -79.94, "lat": 37.271, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Roanoke"}, {"cat": "town", "name": "Abingdon", "lng": -81.977, "lat": 36.71, "when": "Route waypoint / optional stop", "blurb": "Orientation pin; check the daily route before detouring. Approximate town center.", "maps": "https://www.google.com/maps/search/?api=1&query=Abingdon"}, {"cat": "over", "name": "Mill Mountain Star", "lng": -79.9319, "lat": 37.2506, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Mill+Mountain+Star"}, {"cat": "over", "name": "Big Walker Lookout", "lng": -81.131, "lat": 37.0027, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Big+Walker+Lookout"}, {"cat": "over", "name": "White Rocks Overlook", "lng": -83.413, "lat": 36.623, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=White+Rocks+Overlook"}, {"cat": "over", "name": "Grayson Highlands (ponies)", "lng": -81.506, "lat": 36.628, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Grayson+Highlands+%28ponies%29"}, {"cat": "cave", "name": "Natural Bridge", "lng": -79.5433, "lat": 37.6273, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Natural+Bridge"}, {"cat": "cave", "name": "Grand Caverns", "lng": -78.837, "lat": 38.267, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Grand+Caverns"}, {"cat": "cave", "name": "Dixie Caverns", "lng": -80.1466, "lat": 37.2358, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Dixie+Caverns"}, {"cat": "cave", "name": "Gap Cave", "lng": -83.6772, "lat": 36.6033, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Gap+Cave"}, {"cat": "hist", "name": "Frontier Culture Museum", "lng": -78.906, "lat": 38.129, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Frontier+Culture+Museum"}, {"cat": "hist", "name": "Hensley Settlement", "lng": -83.523, "lat": 36.664, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Hensley+Settlement"}, {"cat": "town", "name": "Staunton downtown", "lng": -79.0716, "lat": 38.1496, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Staunton+downtown"}, {"cat": "town", "name": "Lexington downtown", "lng": -79.443, "lat": 37.784, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Lexington+downtown"}, {"cat": "town", "name": "Marion — Lincoln Theatre", "lng": -81.5145, "lat": 36.8346, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Marion+%E2%80%94+Lincoln+Theatre"}, {"cat": "town", "name": "Abingdon — Barter Theatre", "lng": -81.9773, "lat": 36.7096, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Abingdon+%E2%80%94+Barter+Theatre"}, {"cat": "town", "name": "Bristol — Country Music", "lng": -82.184, "lat": 36.5963, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Bristol+%E2%80%94+Country+Music"}, {"cat": "odd", "name": "Dinosaur Kingdom II", "lng": -79.545, "lat": 37.63, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Dinosaur+Kingdom+II"}, {"cat": "odd", "name": "Black Dog Salvage", "lng": -79.964, "lat": 37.267, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=Black+Dog+Salvage"}, {"cat": "odd", "name": "VA Museum of Transportation", "lng": -79.944, "lat": 37.276, "when": "Optional stop from original map", "blurb": "Optional detour retained from your original map. Not a scheduled core stop; verify access, opening hours and any admission. Pin location is approximate.", "maps": "https://www.google.com/maps/search/?api=1&query=VA+Museum+of+Transportation"}];
 const attrLayers = {};
 Object.keys(attrCats).forEach(k=> attrLayers[k] = L.layerGroup().addTo(map));
 
-attractions.forEach(a=>{
-  const c = attrCats[a.cat];
-  const icon = L.divIcon({
-    className:'attr-marker',
-    html:`<div class="attr-badge" style="border-color:${c.color}">${c.emoji}</div>`,
-    iconSize:[24,24], iconAnchor:[12,12], popupAnchor:[0,-12]
-  });
-  L.marker([a.lat,a.lng],{icon})
-    .bindPopup(
-      `<b>${a.name}</b><br>`+
-      `<span style="color:${c.color};font-weight:600;font-size:11px">${c.emoji} ${c.label}</span><br>`+
-      `<span style="font-size:12px">${a.blurb}</span><br>`+
-      `<span style="font-size:11px;color:#777">🗓 ${a.when}</span>`)
-    .bindTooltip(a.name,{direction:'top'})
+const pinMarkers = [];
+attractions.forEach((a,i)=>{
+  const c=attrCats[a.cat],isCamp=a.cat==='camp',size=isCamp?34:24;
+  const icon=L.divIcon({className:'attr-marker',html:`<div class="attr-badge ${isCamp?'camp-badge':''}" style="border-color:${c.color}">${c.emoji}</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2],popupAnchor:[0,-size/2]});
+  const marker=L.marker([a.lat,a.lng],{icon,zIndexOffset:isCamp?2200:100,keyboard:true})
+    .bindPopup(`<b>${a.name}</b><br><span style="color:${c.color};font-weight:600;font-size:11px">${c.emoji} ${c.label}</span><br><span style="font-size:12px">${a.blurb}</span><br><span style="font-size:11px;color:#777">🗓 ${a.when}</span><br><a href="${a.maps}" target="_blank" rel="noopener">Find in Google Maps</a>${a.source?` · <a href="${a.source}" target="_blank" rel="noopener">Official details</a>`:''}`)
+    .bindTooltip(isCamp?a.label||a.name:a.name,{permanent:isCamp,direction:'right',className:isCamp?'camp-label':'',offset:[isCamp?16:0,0]})
     .addTo(attrLayers[a.cat]);
+  pinMarkers.push(marker);
 });
+window.focusPin=function(i){const a=attractions[i];if(!map.hasLayer(attrLayers[a.cat])){attrLayers[a.cat].addTo(map);const box=document.querySelector(`#attrToggles input[data-category="${a.cat}"]`);if(box)box.checked=true;}pause();map.setView([a.lat,a.lng],13);pinMarkers[i].openPopup();};
+window.showAllCamps=function(){if(!map.hasLayer(attrLayers.camp))attrLayers.camp.addTo(map);const box=document.querySelector('#attrToggles input[data-category="camp"]');if(box)box.checked=true;map.fitBounds(L.latLngBounds(attractions.filter(a=>a.cat==='camp').map(a=>[a.lat,a.lng])),{padding:[70,70],maxZoom:9});};
+window.showEveryPin=function(){Object.values(attrLayers).forEach(layer=>{if(!map.hasLayer(layer))layer.addTo(map)});document.querySelectorAll('#attrToggles input').forEach(b=>b.checked=true);map.fitBounds(L.latLngBounds(attractions.map(a=>[a.lat,a.lng])),{padding:[70,70]});};
+document.getElementById('pinDirectory').innerHTML=Object.entries(attrCats).map(([key,c])=>`<details ${key==='camp'?'open':''}><summary>${c.emoji} ${c.label} (${attractions.filter(a=>a.cat===key).length})</summary>${attractions.map((a,i)=>({a,i})).filter(({a})=>a.cat===key).map(({a,i})=>`<button class="pin-link" onclick="window.focusPin(${i})">${a.name}</button>`).join('')}</details>`).join('');
+document.getElementById('pinCount').textContent=attractions.length+' pins · 4 primary campgrounds + 2 reference / alternative camps';
 
 // Build category toggles in the panel (uncheck one to hide that type)
 const togWrap = document.getElementById('attrToggles');
@@ -249,7 +215,7 @@ if (togWrap){
     const row = document.createElement('label');
     row.className = 'attr-row';
     row.innerHTML =
-      `<input type="checkbox" checked>`+
+      `<input type="checkbox" data-category="${k}" checked>`+
       `<span class="attr-swatch" style="background:${c.color}"></span>`+
       `${c.emoji} ${c.label}`;
     togWrap.appendChild(row);
@@ -276,62 +242,24 @@ let dayBoundaryIdx = []; // full-index at each day boundary (for coloring)
 // Same approach as the original: ask OSRM to route through the waypoints so
 // the line follows the actual roads, not straight-line hops between them.
 async function build(){
-  const coords = waypoints.map(p=>p.join(',')).join(';');
-  const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=false`;
-  try {
-    const r = await fetch(url);
-    const j = await r.json();
-    if (j.code !== 'Ok') throw new Error(j.code);
-    const geometry = j.routes[0].geometry.coordinates;
-    const legs = j.routes[0].legs;   // one per waypoint pair — gives us day boundaries
-
-    // Densify the polyline so animation is smooth and the moto can be placed
-    // anywhere along it without jumping.
-    full = interpolate(geometry, 0.0012);
-
-    // Track cumulative mileage so status can show "X mi covered"
-    cumMi = new Array(full.length);
-    cumMi[0] = 0;
-    for (let i=1; i<full.length; i++){
-      cumMi[i] = cumMi[i-1] + haversineMi(full[i-1], full[i]);
-    }
-
-    // Figure out which point on `full` each waypoint sits closest to.
-    // Then split `full` into one polyline per DAY (not per leg) so the
-    // route is colored by day, and we know where day boundaries fall.
-    const wpIdx = waypoints.map(p => nearestIndexToFull(p));
-    dayBoundaryIdx = wpIdx;
-
-    days.forEach(d=>{
-      const from = wpIdx[d.start], to = wpIdx[d.end];
-      const seg = full.slice(from, to+1).map(p=>[p[1],p[0]]);
-      const pl = L.polyline(seg,{
-        color: d.color, weight: 5, opacity: 0.85, interactive:false
-      }).addTo(map);
-      dayPolylines.push(pl);
-    });
-
-    // Blue "traveled" overlay drawn on top as the bike moves
-    traveled = L.polyline([],{
-      color:'#1f6bff', weight:6, opacity:.55, interactive:false
-    }).addTo(map);
-
-    // Motorcycle marker (draggable via our own logic below)
-    moto = L.marker([full[0][1],full[0][0]],{
-      icon: motoIcon(),
-      zIndexOffset: 1000
-    }).addTo(map);
-    attachDragHandlers();
-
-    // Fit the whole route on load
-    map.fitBounds(L.latLngBounds(full.map(p=>[p[1],p[0]])),{padding:[60,60]});
-    draw();
-    updateStatus();
-  } catch(e) {
-    document.getElementById('status').innerHTML =
-      '⚠️ Could not load road geometry.<br>Check your internet connection and reload.';
-    console.error(e);
-  }
+  const moving=itinerary.map((d,i)=>({...d,itineraryIndex:i})).filter(d=>d.points.length>1);
+  const results=await Promise.all(moving.map(async d=>{
+    try{const response=await fetch('https://router.project-osrm.org/route/v1/driving/'+d.points.map(p=>p.join(',')).join(';')+'?overview=full&geometries=geojson&steps=false',{signal:AbortSignal.timeout(15000)});
+      if(!response.ok)throw new Error('HTTP '+response.status);const j=await response.json();if(j.code!=='Ok'||!j.routes?.[0]?.geometry?.coordinates?.length)throw new Error('No route');return {d,geometry:j.routes[0].geometry.coordinates,schematic:false};
+    }catch(e){return {d,geometry:d.points,schematic:true};}
+  }));
+  let missing=0;
+  results.forEach(({d,geometry,schematic})=>{
+    const seg=interpolate(geometry,.0012); const from=full.length;full.push(...seg);const to=full.length-1;
+    days.push({...d,from,to,schematic});if(schematic)missing++;
+    dayPolylines.push(L.polyline(seg.map(p=>[p[1],p[0]]),{color:d.color,weight:5,opacity:.85,dashArray:schematic?'8 8':null}).addTo(map));
+  });
+  cumMi=[0];for(let i=1;i<full.length;i++)cumMi[i]=cumMi[i-1]+haversineMi(full[i-1],full[i]);
+  traveled=L.polyline([],{color:'#1f6bff',weight:6,opacity:.55,interactive:false}).addTo(map);
+  moto=L.marker([full[0][1],full[0][0]],{icon:motoIcon(),zIndexOffset:1000}).addTo(map);attachDragHandlers();
+  if(!locationMarker)map.fitBounds(L.latLngBounds(full.map(p=>[p[1],p[0]])),{padding:[60,60]});
+  document.getElementById('routeNotice').textContent=missing?`${missing} of ${moving.length} riding days use dashed approximate connections because road routing was unavailable. Mileage is incomplete/approximate; use live navigation. Camps and trail pins are approximate.`:'Colored lines follow a live road-router suggestion through the planned towns. They do not verify closures or every named road; compare with navigation. Mileage excludes local hiking-day trips. Camps and trail pins are approximate.';
+  window.routeIsSchematic=missing>0;draw();
 }
 
 // ─── HELPERS ──────────────────────────────────────────────────────────
@@ -447,28 +375,11 @@ function updateStatus(){
   const day = currentDay();
   const stop = nearestNamedStop();
   document.getElementById('status').innerHTML =
-    `<b>${day}</b> · ${miles} of ${total} mi (${pct}%)<br>near: ${stop}`;
+    `<b>${day}</b> · ${miles} of ${total} ${window.routeIsSchematic?"approx. ":""}mi (${pct}%)<br>${stop}`;
 }
 
-function currentDay(){
-  // Which day segment is the bike currently in?
-  for (let i=0; i<days.length; i++){
-    const from = dayBoundaryIdx[days[i].start];
-    const to   = dayBoundaryIdx[days[i].end];
-    if (idx >= from && idx <= to) return days[i].name;
-  }
-  return "Fri";
-}
-
-function nearestNamedStop(){
-  // Find the closest waypoint to the bike's current position, and name it.
-  let best = 0, bd = Infinity;
-  for (let i=0; i<dayBoundaryIdx.length; i++){
-    const d = Math.abs(dayBoundaryIdx[i] - idx);
-    if (d < bd){ bd = d; best = i; }
-  }
-  return names[best];
-}
+function currentDay(){const d=days.find(d=>idx>=d.from&&idx<=d.to);return d?d.name:'Sun Oct 11';}
+function nearestNamedStop(){const d=days.find(d=>idx>=d.from&&idx<=d.to);return d?d.title:'Harrisonburg';}
 
 // ─── PLAYBACK ─────────────────────────────────────────────────────────
 function tick(){
@@ -576,8 +487,11 @@ function nearestFullIndexToLatLng(latlng){
   return best;
 }
 
+window.focusMapDay=function(i){pause();const d=itinerary[i];map.fitBounds(L.latLngBounds(d.points.map(p=>[p[1],p[0]])),{padding:[60,60],maxZoom:d.points.length===1?11:9});const s=days.find(x=>x.itineraryIndex===i);if(s){idx=s.from;draw();}};
 // ─── GO ───────────────────────────────────────────────────────────────
+Object.assign(window,{play,pause,restart,toggleDrag});
 build();
+}
 </script>
 </body>
 </html>
